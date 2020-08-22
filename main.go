@@ -18,7 +18,7 @@ func main() {
 	router := cmd.CreateRouter()
 
 
-	var port string = os.Getenv("PORT") // || ":2999"
+	var port string = os.Getenv("ADDRESS") // || ":2999"
 
 	server := &http.Server{Addr: port, Handler: router}
 
