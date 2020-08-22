@@ -17,12 +17,15 @@ func main() {
 
 	router := cmd.CreateRouter()
 
+	var port string = os.Getenv("ADDRESS")
 
-	var port string = os.Getenv("ADDRESS") // || ":2999"
+	if port == "" {
+		port = ":2999"
+	}
 
 	server := &http.Server{Addr: port, Handler: router}
 
-	go func () {
+	go func() {
 		if err := server.ListenAndServe(); err != http.ErrServerClosed {
 			panic(err)
 		}
