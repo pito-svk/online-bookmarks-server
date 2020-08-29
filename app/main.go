@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -22,4 +23,11 @@ func main() {
 	if port == "" {
 		port = ":2999"
 	}
+
+	server := &http.Server{Addr: port, Handler: nil}
+
+	if err := server.ListenAndServe(); err != http.ErrServerClosed {
+		panic(err)
+	}
+	log.Printf("Server started on %s", port)
 }
