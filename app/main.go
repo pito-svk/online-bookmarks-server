@@ -26,8 +26,10 @@ func main() {
 
 	server := &http.Server{Addr: port, Handler: nil}
 
-	if err := server.ListenAndServe(); err != http.ErrServerClosed {
-		panic(err)
-	}
+	go func() {
+		if err := server.ListenAndServe(); err != http.ErrServerClosed {
+			panic(err)
+		}
+	}()
 	log.Printf("Server started on %s", port)
 }
