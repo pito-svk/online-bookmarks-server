@@ -11,12 +11,16 @@ type PingHandler struct {
 	PingUsecase domain.PingUsecase
 }
 
-func NewPingHandler(router *chi.Mux) {
-	handler := &PingHandler{}
+func NewPingHandler(router *chi.Mux, us domain.PingUsecase) {
+	handler := &PingHandler{
+		PingUsecase: us,
+	}
 
 	router.Get("/ping", handler.GetPing)
 }
 
-func (*PingHandler) GetPing(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("PONG"))
+func (p *PingHandler) GetPing(w http.ResponseWriter, r *http.Request) {
+	pingResponse := p.PingUsecase.Get()
+
+	w.Write([]byte(pingResponse))
 }

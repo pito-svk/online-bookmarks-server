@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/joho/godotenv"
 	_pingHttpDelivery "peterparada.com/online-bookmarks/ping/delivery/http"
+	_pingUsecase "peterparada.com/online-bookmarks/ping/usecase"
 )
 
 func loadConfig() {
@@ -27,7 +28,9 @@ func main() {
 	}
 
 	r := chi.NewRouter()
-	_pingHttpDelivery.NewPingHandler(r)
+
+	pingUsecase := _pingUsecase.NewPingUsecase()
+	_pingHttpDelivery.NewPingHandler(r, pingUsecase)
 
 	server := &http.Server{Addr: port, Handler: r}
 
