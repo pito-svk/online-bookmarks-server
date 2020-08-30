@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/go-chi/chi"
 	"github.com/joho/godotenv"
 )
 
@@ -24,7 +25,9 @@ func main() {
 		port = ":2999"
 	}
 
-	server := &http.Server{Addr: port, Handler: nil}
+	r := chi.NewRouter()
+
+	server := &http.Server{Addr: port, Handler: r}
 
 	log.Printf("Server started on %s", port)
 	server.ListenAndServe()
