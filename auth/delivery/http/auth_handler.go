@@ -52,6 +52,8 @@ func validateCreateUserInput(userData *userDataInput) error {
 func (a *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	userData := userDataInput{}
 
+	w.Header().Set("Content-Type", "application/json")
+
 	err := json.NewDecoder(r.Body).Decode(&userData)
 	if err != nil {
 		w.Write([]byte(err.Error()))
