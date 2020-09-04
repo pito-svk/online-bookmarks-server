@@ -60,13 +60,15 @@ func (a *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&userData)
 	if err != nil {
-		w.Write([]byte(err.Error()))
+		w.WriteHeader(400)
+		json.NewEncoder(w).Encode(httpErrorMessage{Error: err.Error()})
 		return
 	}
 
 	err = validateCreateUserInput(&userData)
 	if err != nil {
-		w.Write([]byte(err.Error()))
+		w.WriteHeader(400)
+		json.NewEncoder(w).Encode(httpErrorMessage{Error: err.Error()})
 		return
 	}
 
