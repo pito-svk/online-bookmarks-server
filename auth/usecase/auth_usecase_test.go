@@ -26,5 +26,15 @@ func TestRegister(t *testing.T) {
 		assert.Empty(t, registeredUser.Password)
 		assert.Equal(t, registeredUser.FirstName, "John")
 		assert.Equal(t, registeredUser.LastName, "Doe")
+
+		secondUserData := entity.User{Email: "random2@example.com", Password: "securePassword", FirstName: "Martin", LastName: "Appleseed"}
+
+		err, secondRegisteredUser := u.Register(&secondUserData)
+
+		assert.NotEqual(t, registeredUser.ID, secondRegisteredUser.ID)
+		assert.Equal(t, secondRegisteredUser.Email, "random2@example.com")
+		assert.Empty(t, secondRegisteredUser.Password)
+		assert.Equal(t, secondRegisteredUser.FirstName, "Martin")
+		assert.Equal(t, secondRegisteredUser.LastName, "Appleseed")
 	})
 }
