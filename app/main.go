@@ -7,8 +7,11 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/joho/godotenv"
+	_authHttpDelivery "peterparada.com/online-bookmarks/auth/delivery/http"
+	_authUsecase "peterparada.com/online-bookmarks/auth/usecase"
 	_pingHttpDelivery "peterparada.com/online-bookmarks/ping/delivery/http"
 	_pingUsecase "peterparada.com/online-bookmarks/ping/usecase"
+	_userRepo "peterparada.com/online-bookmarks/user/repository/filedb"
 )
 
 func loadConfig() {
@@ -31,6 +34,11 @@ func main() {
 
 	pingUsecase := _pingUsecase.NewPingUsecase()
 	_pingHttpDelivery.NewPingHandler(r, pingUsecase)
+
+	userRepo := _userRepo.NewFileDBUserRepository()
+
+	authUsecase := _authUsecase.NewAuthUsecase(userRepo)
+	_authHttpDelivery.NewAuthHandler(r, authUsecase)
 
 	server := &http.Server{Addr: port, Handler: r}
 
