@@ -13,7 +13,7 @@ import (
 
 func TestRegister(t *testing.T) {
 	w := httptest.NewRecorder()
-	r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(""))
+	r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(`{ "email": "random@example.com", "password": "demouser", "firstName": "John", "lastName": "Doe" }`))
 
 	mockUsecase := new(mocks.AuthUsecase)
 
