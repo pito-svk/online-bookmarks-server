@@ -16,6 +16,7 @@ func TestRegister(t *testing.T) {
 		u := usecase.NewAuthUsecase(mockUserRepo)
 
 		userData := entity.User{Email: "random@example.com", Password: "securePassword", FirstName: "John", LastName: "Doe"}
+		duplicateUserData := userData
 
 		registeredUser, err := u.Register(&userData)
 
@@ -38,8 +39,6 @@ func TestRegister(t *testing.T) {
 		assert.Empty(t, secondRegisteredUser.Password)
 		assert.Equal(t, secondRegisteredUser.FirstName, "Martin")
 		assert.Equal(t, secondRegisteredUser.LastName, "Appleseed")
-
-		duplicateUserData := userData
 
 		duplicateUser, err := u.Register(&duplicateUserData)
 
