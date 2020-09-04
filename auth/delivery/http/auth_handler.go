@@ -29,6 +29,10 @@ type userDataInput struct {
 	LastName  string `json:"lastName"`
 }
 
+type httpErrorMessage struct {
+	Error string `json:"error"`
+}
+
 func validateCreateUserInput(userData *userDataInput) error {
 	if userData.Email == "" {
 		return errors.New("Missing email")
@@ -75,7 +79,8 @@ func (a *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 
 	userResponse, err := a.AuthUsecase.Register(&user)
 	if err != nil {
-		w.Write([]byte(err.Error()))
+		w.WriteHeader(409)
+		json.NewEncoder(w).Encode(httpErrorMessage{Error: err.Error()})
 		return
 	}
 
