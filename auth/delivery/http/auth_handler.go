@@ -86,7 +86,7 @@ func (a *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: Implement
-	w.Write([]byte(userResponse.Email))
+	w.WriteHeader(201)
+	json.NewEncoder(w).Encode(userResponse)
 	return
 }
