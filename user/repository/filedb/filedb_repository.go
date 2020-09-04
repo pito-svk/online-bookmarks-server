@@ -1,22 +1,34 @@
 package filedb
 
 import (
-	"github.com/boltdb/bolt"
+	"errors"
+	"log"
+
+	"github.com/nanobox-io/golang-scribble"
 	"peterparada.com/online-bookmarks/domain"
 	"peterparada.com/online-bookmarks/domain/entity"
 )
 
 type fileDBUserRepo struct {
-	DB *bolt.DB
+	DB *scribble.Driver
 }
 
-func NewFileDBUserRepository(db *bolt.DB) domain.UserRepository {
+func NewFileDBUserRepository(db *scribble.Driver) domain.UserRepository {
 	return &fileDBUserRepo{
 		DB: db,
 	}
 }
 
 func (userRepo *fileDBUserRepo) Store(user *entity.User) (*entity.User, error) {
-	// TODO: Implement
-	return nil, nil
+	err := userRepo.DB.Read("userdata", user.Email, user)
+	if err == nil {
+		return nil, errors.New("User already exists")
+	}
+
+	err = userRepo.DB.Write("userdata", user.Email, user)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return user, nil
 }

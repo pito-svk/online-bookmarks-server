@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/boltdb/bolt"
 	"github.com/go-chi/chi"
 	"github.com/joho/godotenv"
+	"github.com/nanobox-io/golang-scribble"
 	_authHttpDelivery "peterparada.com/online-bookmarks/auth/delivery/http"
 	_authUsecase "peterparada.com/online-bookmarks/auth/usecase"
 	_pingHttpDelivery "peterparada.com/online-bookmarks/ping/delivery/http"
@@ -36,12 +36,12 @@ func main() {
 	pingUsecase := _pingUsecase.NewPingUsecase()
 	_pingHttpDelivery.NewPingHandler(r, pingUsecase)
 
-	userFileDB, err := bolt.Open("user.db", 0600, nil)
+	fileDB, err := scribble.New(".", nil)
 	if err != nil {
-		log.Fatal("Error loding user database")
+		log.Fatal("Error loding file database")
 	}
 
-	userRepo := _userRepo.NewFileDBUserRepository(userFileDB)
+	userRepo := _userRepo.NewFileDBUserRepository(fileDB)
 
 	authUsecase := _authUsecase.NewAuthUsecase(userRepo)
 	_authHttpDelivery.NewAuthHandler(r, authUsecase)

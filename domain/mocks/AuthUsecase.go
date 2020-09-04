@@ -1,6 +1,8 @@
 package mocks
 
-import "peterparada.com/online-bookmarks/domain/entity"
+import (
+	"peterparada.com/online-bookmarks/domain/entity"
+)
 
 type AuthUsecase struct {
 }
