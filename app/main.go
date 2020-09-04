@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/boltdb/bolt"
 	"github.com/go-chi/chi"
 	"github.com/joho/godotenv"
 	_authHttpDelivery "peterparada.com/online-bookmarks/auth/delivery/http"
@@ -35,7 +36,12 @@ func main() {
 	pingUsecase := _pingUsecase.NewPingUsecase()
 	_pingHttpDelivery.NewPingHandler(r, pingUsecase)
 
-	userRepo := _userRepo.NewFileDBUserRepository()
+	userFileDB, err := bolt.Open("user.db", 0600, nil)
+	if err != nil {
+		log.Fatal("Error loding user database")
+	}
+
+	userRepo := _userRepo.NewFileDBUserRepository(userFileDB)
 
 	authUsecase := _authUsecase.NewAuthUsecase(userRepo)
 	_authHttpDelivery.NewAuthHandler(r, authUsecase)
