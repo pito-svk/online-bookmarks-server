@@ -3,7 +3,6 @@ package http
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi"
@@ -55,14 +54,14 @@ func (a *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&userData)
 	if err != nil {
-		// TODO: Implement
-		fmt.Println(err)
+		w.Write([]byte(err.Error()))
+		return
 	}
 
 	err = validateCreateUserInput(&userData)
 	if err != nil {
-		// TODO: Implement
-		fmt.Println(err)
+		w.Write([]byte(err.Error()))
+		return
 	}
 
 	user := entity.User{
@@ -73,11 +72,12 @@ func (a *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userResponse, err := a.AuthUsecase.Register(&user)
-
 	if err != nil {
-		w.Write([]byte("Error: TODO"))
+		w.Write([]byte(err.Error()))
+		return
 	}
 
 	// TODO: Implement
 	w.Write([]byte(userResponse.Email))
+	return
 }
