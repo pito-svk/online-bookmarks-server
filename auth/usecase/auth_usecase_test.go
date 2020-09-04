@@ -6,12 +6,14 @@ import (
 	"github.com/stretchr/testify/assert"
 	"peterparada.com/online-bookmarks/auth/usecase"
 	"peterparada.com/online-bookmarks/domain/entity"
+	"peterparada.com/online-bookmarks/domain/mocks"
 )
 
 func TestRegister(t *testing.T) {
+	mockUserRepo := new(mocks.UserRepository)
 
 	t.Run("success", func(t *testing.T) {
-		u := usecase.NewAuthUsecase()
+		u := usecase.NewAuthUsecase(mockUserRepo)
 
 		userData := entity.User{Email: "random@example.com", Password: "securePassword", FirstName: "John", LastName: "Doe"}
 

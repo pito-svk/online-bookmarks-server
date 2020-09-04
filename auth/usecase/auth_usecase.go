@@ -6,12 +6,15 @@ import (
 )
 
 type authUsecase struct {
+	userRepo domain.UserRepository
 }
 
-func NewAuthUsecase() domain.AuthUsecase {
-	return &authUsecase{}
+func NewAuthUsecase(userRepo domain.UserRepository) domain.AuthUsecase {
+	return &authUsecase{
+		userRepo,
+	}
 }
 
 func (a *authUsecase) Register(u *entity.User) (error, entity.User) {
-	return nil, entity.User{ID: "123", Email: "random@example.com", FirstName: "John", LastName: "Doe"}
+	return a.userRepo.Store(u)
 }
