@@ -15,6 +15,6 @@ func NewAuthUsecase(userRepo domain.UserRepository) domain.AuthUsecase {
 	}
 }
 
-func (a *authUsecase) Register(u *entity.User) (error, entity.User) {
+func (a *authUsecase) Register(u *entity.User) (*entity.User, error) {
 	return a.userRepo.Store(u)
 }
