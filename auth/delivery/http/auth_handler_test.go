@@ -32,4 +32,7 @@ func TestRegister(t *testing.T) {
 
 	assert.NotEmpty(t, jsonResponse["id"])
 	assert.Empty(t, jsonResponse["password"])
+	assert.Equal(t, jsonResponse["email"], "random@example.com")
+	assert.Equal(t, jsonResponse["firstName"], "John")
+	assert.Equal(t, jsonResponse["lastName"], "Doe")
 }
