@@ -18,7 +18,20 @@ func TestRegister(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		w := httptest.NewRecorder()
-		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(`{ "email": "random@example.com", "password": "demouser", "firstName": "John", "lastName": "Doe" }`))
+
+		userData := _authHttpDelivery.UserDataInput{
+			Email:     "random@example.com",
+			Password:  "demouser",
+			FirstName: "John",
+			LastName:  "Doe",
+		}
+
+		userDataJSON, err := json.Marshal(userData)
+		if err != nil {
+			panic(err)
+		}
+
+		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(string(userDataJSON)))
 
 		handler := _authHttpDelivery.AuthHandler{
 			AuthUsecase: mockUsecase,
@@ -58,7 +71,19 @@ func TestRegister(t *testing.T) {
 
 	t.Run("missing email", func(t *testing.T) {
 		w := httptest.NewRecorder()
-		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(`{ "password": "demouser", "firstName": "John", "lastName": "Doe" }`))
+
+		userData := _authHttpDelivery.UserDataInput{
+			Password:  "demouser",
+			FirstName: "John",
+			LastName:  "Doe",
+		}
+
+		userDataJSON, err := json.Marshal(userData)
+		if err != nil {
+			panic(err)
+		}
+
+		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(string(userDataJSON)))
 
 		handler := _authHttpDelivery.AuthHandler{
 			AuthUsecase: mockUsecase,
@@ -76,7 +101,19 @@ func TestRegister(t *testing.T) {
 
 	t.Run("missing password", func(t *testing.T) {
 		w := httptest.NewRecorder()
-		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(`{ "email": "random@example.com", "firstName": "John", "lastName": "Doe" }`))
+
+		userData := _authHttpDelivery.UserDataInput{
+			Email:     "random@example.com",
+			FirstName: "John",
+			LastName:  "Doe",
+		}
+
+		userDataJSON, err := json.Marshal(userData)
+		if err != nil {
+			panic(err)
+		}
+
+		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(string(userDataJSON)))
 
 		handler := _authHttpDelivery.AuthHandler{
 			AuthUsecase: mockUsecase,
@@ -94,7 +131,19 @@ func TestRegister(t *testing.T) {
 
 	t.Run("missing firstName", func(t *testing.T) {
 		w := httptest.NewRecorder()
-		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(`{ "email": "random@example.com", "password": "demouser", "lastName": "Doe" }`))
+
+		userData := _authHttpDelivery.UserDataInput{
+			Email:    "random@example.com",
+			Password: "demouser",
+			LastName: "Doe",
+		}
+
+		userDataJSON, err := json.Marshal(userData)
+		if err != nil {
+			panic(err)
+		}
+
+		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(string(userDataJSON)))
 
 		handler := _authHttpDelivery.AuthHandler{
 			AuthUsecase: mockUsecase,
@@ -112,7 +161,19 @@ func TestRegister(t *testing.T) {
 
 	t.Run("missing lastName", func(t *testing.T) {
 		w := httptest.NewRecorder()
-		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(`{ "email": "random@example.com", "password": "demouser", "firstName": "John" }`))
+
+		userData := _authHttpDelivery.UserDataInput{
+			Email:     "random@example.com",
+			Password:  "demouser",
+			FirstName: "John",
+		}
+
+		userDataJSON, err := json.Marshal(userData)
+		if err != nil {
+			panic(err)
+		}
+
+		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(string(userDataJSON)))
 
 		handler := _authHttpDelivery.AuthHandler{
 			AuthUsecase: mockUsecase,
@@ -130,7 +191,20 @@ func TestRegister(t *testing.T) {
 
 	t.Run("invalid email", func(t *testing.T) {
 		w := httptest.NewRecorder()
-		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(`{ "email": "invalidEmail", "password": "demouser", "firstName": "John", "lastName": "Doe" }`))
+
+		userData := _authHttpDelivery.UserDataInput{
+			Email:     "invalidEmail",
+			Password:  "demouser",
+			FirstName: "John",
+			LastName:  "Doe",
+		}
+
+		userDataJSON, err := json.Marshal(userData)
+		if err != nil {
+			panic(err)
+		}
+
+		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(string(userDataJSON)))
 
 		handler := _authHttpDelivery.AuthHandler{
 			AuthUsecase: mockUsecase,

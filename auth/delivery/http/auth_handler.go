@@ -25,7 +25,7 @@ func NewAuthHandler(router *chi.Mux, us domain.AuthUsecase) {
 	router.Post("/auth/register", handler.RegisterUser)
 }
 
-type userDataInput struct {
+type UserDataInput struct {
 	Email     string `json:"email" validate:"required,email"`
 	Password  string `json:"password" validate:"required"`
 	FirstName string `json:"firstName" validate:"required"`
@@ -43,7 +43,7 @@ type httpErrorMessage struct {
 	Error string `json:"error"`
 }
 
-func validateCreateUserInput(userData *userDataInput) error {
+func validateCreateUserInput(userData *UserDataInput) error {
 	v := validator.New()
 
 	err := v.Struct(userData)
@@ -67,7 +67,7 @@ func validateCreateUserInput(userData *userDataInput) error {
 }
 
 func (a *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
-	userData := userDataInput{}
+	userData := UserDataInput{}
 
 	w.Header().Set("Content-Type", "application/json")
 
