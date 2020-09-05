@@ -46,10 +46,10 @@ func TestRegister(t *testing.T) {
 		assert.NoError(t, err)
 
 		assert.NotEmpty(t, registeredUser.ID)
-		assert.Equal(t, registeredUser.Email, "random@example.com")
+		assert.Equal(t, "random@example.com", registeredUser.Email)
 		assert.Empty(t, registeredUser.Password)
-		assert.Equal(t, registeredUser.FirstName, "John")
-		assert.Equal(t, registeredUser.LastName, "Doe")
+		assert.Equal(t, "John", registeredUser.FirstName)
+		assert.Equal(t, "Doe", registeredUser.LastName)
 
 		secondUserData := entity.User{Email: "random2@example.com", Password: "securePassword", FirstName: "Martin", LastName: "Appleseed"}
 
@@ -58,10 +58,10 @@ func TestRegister(t *testing.T) {
 		assert.NoError(t, err)
 
 		assert.NotEqual(t, registeredUser.ID, secondRegisteredUser.ID)
-		assert.Equal(t, secondRegisteredUser.Email, "random2@example.com")
+		assert.Equal(t, "random2@example.com", secondRegisteredUser.Email)
 		assert.Empty(t, secondRegisteredUser.Password)
-		assert.Equal(t, secondRegisteredUser.FirstName, "Martin")
-		assert.Equal(t, secondRegisteredUser.LastName, "Appleseed")
+		assert.Equal(t, "Martin", secondRegisteredUser.FirstName)
+		assert.Equal(t, "Appleseed", secondRegisteredUser.LastName)
 
 		duplicateUser, err := u.Register(&duplicateUserData)
 
