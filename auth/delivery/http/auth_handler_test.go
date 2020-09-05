@@ -13,26 +13,46 @@ import (
 )
 
 func TestRegister(t *testing.T) {
-	w := httptest.NewRecorder()
-	r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(`{ "email": "random@example.com", "password": "demouser", "firstName": "John", "lastName": "Doe" }`))
+	mockUserRepo := new(mocks.UserRepository)
+	mockUsecase := mocks.NewAuthUsecase(mockUserRepo)
 
-	mockUsecase := new(mocks.AuthUsecase)
+	t.Run("success", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(`{ "email": "random@example.com", "password": "demouser", "firstName": "John", "lastName": "Doe" }`))
 
-	handler := _authHttpDelivery.AuthHandler{
-		AuthUsecase: mockUsecase,
-	}
+		handler := _authHttpDelivery.AuthHandler{
+			AuthUsecase: mockUsecase,
+		}
 
-	handler.RegisterUser(w, r)
+		handler.RegisterUser(w, r)
 
-	assert.Equal(t, w.Code, http.StatusCreated)
+		var jsonResponse map[string]interface{}
 
-	var jsonResponse map[string]interface{}
+		json.Unmarshal(w.Body.Bytes(), &jsonResponse)
 
-	json.Unmarshal(w.Body.Bytes(), &jsonResponse)
+		assert.Equal(t, w.Code, http.StatusCreated)
+		assert.NotEmpty(t, jsonResponse["id"])
+		assert.Empty(t, jsonResponse["password"])
+		assert.Equal(t, jsonResponse["email"], "random@example.com")
+		assert.Equal(t, jsonResponse["firstName"], "John")
+		assert.Equal(t, jsonResponse["lastName"], "Doe")
+	})
 
-	assert.NotEmpty(t, jsonResponse["id"])
-	assert.Empty(t, jsonResponse["password"])
-	assert.Equal(t, jsonResponse["email"], "random@example.com")
-	assert.Equal(t, jsonResponse["firstName"], "John")
-	assert.Equal(t, jsonResponse["lastName"], "Doe")
+	t.Run("duplicate", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(`{ "email": "random@example.com", "password": "demouser", "firstName": "John", "lastName": "Doe" }`))
+
+		handler := _authHttpDelivery.AuthHandler{
+			AuthUsecase: mockUsecase,
+		}
+
+		handler.RegisterUser(w, r)
+
+		var jsonResponse map[string]interface{}
+
+		json.Unmarshal(w.Body.Bytes(), &jsonResponse)
+
+		assert.Equal(t, w.Code, http.StatusConflict)
+		assert.Equal(t, jsonResponse["error"], "Email already exists")
+	})
 }
