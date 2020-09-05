@@ -23,5 +23,5 @@ func TestRegister(t *testing.T) {
 
 	handler.RegisterUser(w, r)
 
-	assert.Equal(t, w.Code, http.StatusOK)
+	assert.Equal(t, w.Code, http.StatusCreated)
 }
