@@ -1,6 +1,7 @@
 package http_test
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -24,4 +25,10 @@ func TestRegister(t *testing.T) {
 	handler.RegisterUser(w, r)
 
 	assert.Equal(t, w.Code, http.StatusCreated)
+
+	var jsonResponse map[string]interface{}
+
+	json.Unmarshal(w.Body.Bytes(), &jsonResponse)
+
+	assert.NotEmpty(t, jsonResponse["ID"])
 }

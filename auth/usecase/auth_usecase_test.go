@@ -1,6 +1,7 @@
 package usecase_test
 
 import (
+	"encoding/hex"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -8,6 +9,18 @@ import (
 	"peterparada.com/online-bookmarks/domain/entity"
 	"peterparada.com/online-bookmarks/domain/mocks"
 )
+
+func TestGenerateHexID(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		hexId := usecase.GenerateHexID()
+
+		decimalStringId := make([]byte, hex.DecodedLen(len(hexId)))
+
+		_, err := hex.Decode(decimalStringId, []byte(hexId))
+
+		assert.NoError(t, err)
+	})
+}
 
 func TestRegister(t *testing.T) {
 	mockUserRepo := new(mocks.UserRepository)
