@@ -54,7 +54,7 @@ func validateCreateUserInput(userData *userDataInput) error {
 	}
 
 	if userData.LastName == "" {
-		return errors.New("Mssing lastName")
+		return errors.New("Missing lastName")
 	}
 
 	return nil
