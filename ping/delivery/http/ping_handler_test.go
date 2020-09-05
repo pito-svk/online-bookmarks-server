@@ -23,6 +23,6 @@ func TestGet(t *testing.T) {
 
 	handler.GetPing(w, r)
 
-	assert.Equal(t, w.Code, http.StatusOK)
-	assert.Equal(t, w.Body.String(), "PONG")
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, "PONG", w.Body.String())
 }
