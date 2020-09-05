@@ -29,6 +29,13 @@ type userDataInput struct {
 	LastName  string `json:"lastName"`
 }
 
+type userCreatedResponse struct {
+	ID        string `json:"id"`
+	Email     string `json:"email"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+}
+
 type httpErrorMessage struct {
 	Error string `json:"error"`
 }
@@ -86,7 +93,14 @@ func (a *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	response := userCreatedResponse{
+		ID:        userResponse.ID,
+		Email:     userResponse.Email,
+		FirstName: userResponse.FirstName,
+		LastName:  userResponse.LastName,
+	}
+
 	w.WriteHeader(201)
-	json.NewEncoder(w).Encode(userResponse)
+	json.NewEncoder(w).Encode(response)
 	return
 }

@@ -24,8 +24,20 @@ func GenerateID() string {
 	return GenerateHexID()
 }
 
+func HashPassword(password string) string {
+	return "hashPassword"
+}
+
 func (a *authUsecase) Register(u *entity.User) (*entity.User, error) {
 	u.ID = GenerateID()
+	u.Password = HashPassword(u.Password)
 
-	return a.userRepo.Store(u)
+	user, err := a.userRepo.Store(u)
+	if err != nil {
+		return nil, err
+	}
+
+	user.Password = ""
+
+	return user, nil
 }

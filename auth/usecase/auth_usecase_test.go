@@ -22,6 +22,15 @@ func TestGenerateHexID(t *testing.T) {
 	})
 }
 
+func TestHashPassword(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		password := "randomPassword"
+		hashedPassword := usecase.HashPassword(password)
+
+		assert.NotEqual(t, password, hashedPassword)
+	})
+}
+
 func TestRegister(t *testing.T) {
 	mockUserRepo := new(mocks.UserRepository)
 

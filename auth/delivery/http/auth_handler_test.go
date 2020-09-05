@@ -30,5 +30,6 @@ func TestRegister(t *testing.T) {
 
 	json.Unmarshal(w.Body.Bytes(), &jsonResponse)
 
-	assert.NotEmpty(t, jsonResponse["ID"])
+	assert.NotEmpty(t, jsonResponse["id"])
+	assert.Empty(t, jsonResponse["password"])
 }
