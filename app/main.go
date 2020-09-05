@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/joho/godotenv"
 	"github.com/nanobox-io/golang-scribble"
+	"github.com/sirupsen/logrus"
 	_authHttpDelivery "peterparada.com/online-bookmarks/auth/delivery/http"
 	_authUsecase "peterparada.com/online-bookmarks/auth/usecase"
 	_pingHttpDelivery "peterparada.com/online-bookmarks/ping/delivery/http"
@@ -22,6 +23,14 @@ func loadConfig() {
 	}
 }
 
+func initLogger() *logrus.Logger {
+	logger := logrus.New()
+
+	logger.SetOutput(os.Stdout)
+
+	return logger
+}
+
 func main() {
 	loadConfig()
 
@@ -31,7 +40,7 @@ func main() {
 		port = ":2999"
 	}
 
-	logger := log.New(os.Stderr, "", log.Lshortfile)
+	logger := initLogger()
 
 	r := chi.NewRouter()
 

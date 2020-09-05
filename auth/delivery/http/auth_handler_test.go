@@ -2,11 +2,8 @@ package http_test
 
 import (
 	"encoding/json"
-	"io/ioutil"
-	"log"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"strings"
 	"testing"
 
@@ -18,9 +15,7 @@ import (
 func TestRegister(t *testing.T) {
 	mockUserRepo := new(mocks.UserRepository)
 	mockUsecase := mocks.NewAuthUsecase(mockUserRepo)
-	mockLogger := log.New(os.Stderr, "", log.Lshortfile)
-
-	mockLogger.SetOutput(ioutil.Discard)
+	mockLogger := mocks.NewLogger()
 
 	t.Run("success", func(t *testing.T) {
 		w := httptest.NewRecorder()

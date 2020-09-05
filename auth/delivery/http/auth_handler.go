@@ -4,22 +4,22 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 
 	"github.com/go-chi/chi"
 	"github.com/go-playground/validator/v10"
+	"github.com/sirupsen/logrus"
 	"peterparada.com/online-bookmarks/domain"
 	"peterparada.com/online-bookmarks/domain/entity"
 )
 
 type AuthHandler struct {
 	AuthUsecase domain.AuthUsecase
-	Logger      *log.Logger
+	Logger      *logrus.Logger
 }
 
-func NewAuthHandler(router *chi.Mux, us domain.AuthUsecase, logger *log.Logger) {
+func NewAuthHandler(router *chi.Mux, us domain.AuthUsecase, logger *logrus.Logger) {
 	handler := &AuthHandler{
 		AuthUsecase: us,
 		Logger:      logger,
