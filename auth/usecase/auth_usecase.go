@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"golang.org/x/crypto/bcrypt"
 	"peterparada.com/online-bookmarks/domain"
 	"peterparada.com/online-bookmarks/domain/entity"
 )
@@ -24,13 +25,23 @@ func GenerateID() string {
 	return GenerateHexID()
 }
 
-func HashPassword(password string) string {
-	return "hashPassword"
+func HashPassword(password string) (string, error) {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+
+	return string(hashedPassword), nil
 }
 
 func (a *authUsecase) Register(u *entity.User) (*entity.User, error) {
 	u.ID = GenerateID()
-	u.Password = HashPassword(u.Password)
+	hashedPassword, err := HashPassword(u.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	u.Password = hashedPassword
 
 	user, err := a.userRepo.Store(u)
 	if err != nil {

@@ -25,8 +25,9 @@ func TestGenerateHexID(t *testing.T) {
 func TestHashPassword(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		password := "randomPassword"
-		hashedPassword := usecase.HashPassword(password)
+		hashedPassword, err := usecase.HashPassword(password)
 
+		assert.NoError(t, err)
 		assert.NotEqual(t, password, hashedPassword)
 	})
 }
