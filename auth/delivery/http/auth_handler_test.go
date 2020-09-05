@@ -30,12 +30,12 @@ func TestRegister(t *testing.T) {
 
 		json.Unmarshal(w.Body.Bytes(), &jsonResponse)
 
-		assert.Equal(t, w.Code, http.StatusCreated)
+		assert.Equal(t, http.StatusCreated, w.Code)
 		assert.NotEmpty(t, jsonResponse["id"])
 		assert.Empty(t, jsonResponse["password"])
-		assert.Equal(t, jsonResponse["email"], "random@example.com")
-		assert.Equal(t, jsonResponse["firstName"], "John")
-		assert.Equal(t, jsonResponse["lastName"], "Doe")
+		assert.Equal(t, "random@example.com", jsonResponse["email"])
+		assert.Equal(t, "John", jsonResponse["firstName"])
+		assert.Equal(t, "Doe", jsonResponse["lastName"])
 	})
 
 	t.Run("duplicate", func(t *testing.T) {
@@ -52,8 +52,8 @@ func TestRegister(t *testing.T) {
 
 		json.Unmarshal(w.Body.Bytes(), &jsonResponse)
 
-		assert.Equal(t, w.Code, http.StatusConflict)
-		assert.Equal(t, jsonResponse["error"], "Email already exists")
+		assert.Equal(t, http.StatusConflict, w.Code)
+		assert.Equal(t, "Email already exists", jsonResponse["error"])
 	})
 
 	t.Run("missing email", func(t *testing.T) {
@@ -70,8 +70,8 @@ func TestRegister(t *testing.T) {
 
 		json.Unmarshal(w.Body.Bytes(), &jsonResponse)
 
-		assert.Equal(t, w.Code, http.StatusBadRequest)
-		assert.Equal(t, jsonResponse["error"], "Missing email")
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+		assert.Equal(t, "Missing email", jsonResponse["error"])
 	})
 
 	t.Run("missing password", func(t *testing.T) {
@@ -88,8 +88,8 @@ func TestRegister(t *testing.T) {
 
 		json.Unmarshal(w.Body.Bytes(), &jsonResponse)
 
-		assert.Equal(t, w.Code, http.StatusBadRequest)
-		assert.Equal(t, jsonResponse["error"], "Missing password")
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+		assert.Equal(t, "Missing password", jsonResponse["error"])
 	})
 
 	t.Run("missing firstName", func(t *testing.T) {
@@ -106,8 +106,8 @@ func TestRegister(t *testing.T) {
 
 		json.Unmarshal(w.Body.Bytes(), &jsonResponse)
 
-		assert.Equal(t, w.Code, http.StatusBadRequest)
-		assert.Equal(t, jsonResponse["error"], "Missing firstName")
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+		assert.Equal(t, "Missing firstName", jsonResponse["error"])
 	})
 
 	t.Run("missing lastName", func(t *testing.T) {
@@ -124,7 +124,7 @@ func TestRegister(t *testing.T) {
 
 		json.Unmarshal(w.Body.Bytes(), &jsonResponse)
 
-		assert.Equal(t, w.Code, http.StatusBadRequest)
-		assert.Equal(t, jsonResponse["error"], "Missing lastName")
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+		assert.Equal(t, "Missing lastName", jsonResponse["error"])
 	})
 }
