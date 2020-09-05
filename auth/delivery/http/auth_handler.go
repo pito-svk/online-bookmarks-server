@@ -78,7 +78,7 @@ func (a *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(400)
 
-		a.Logger.Print(err)
+		a.Logger.Error(err)
 
 		json.NewEncoder(w).Encode(httpErrorMessage{Error: "Error parsing JSON body"})
 		return
