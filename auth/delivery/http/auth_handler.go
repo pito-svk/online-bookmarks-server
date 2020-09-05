@@ -3,9 +3,12 @@ package http
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/go-chi/chi"
+	"github.com/go-playground/validator/v10"
 	"peterparada.com/online-bookmarks/domain"
 	"peterparada.com/online-bookmarks/domain/entity"
 )
@@ -23,10 +26,10 @@ func NewAuthHandler(router *chi.Mux, us domain.AuthUsecase) {
 }
 
 type userDataInput struct {
-	Email     string `json:"email"`
-	Password  string `json:"password"`
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
+	Email     string `json:"email" validate:"required,email"`
+	Password  string `json:"password" validate:"required"`
+	FirstName string `json:"firstName" validate:"required"`
+	LastName  string `json:"lastName" validate:"required"`
 }
 
 type userCreatedResponse struct {
@@ -41,23 +44,26 @@ type httpErrorMessage struct {
 }
 
 func validateCreateUserInput(userData *userDataInput) error {
-	if userData.Email == "" {
-		return errors.New("Missing email")
+	v := validator.New()
+
+	err := v.Struct(userData)
+
+	if err != nil {
+		validationErrors := err.(validator.ValidationErrors)
+
+		for _, err := range validationErrors {
+			if err.Tag() == "required" {
+				err.StructField()
+				return fmt.Errorf("Missing %s%s", strings.ToLower(string(err.Field()[0])), err.Field()[1:])
+			}
+
+			if err.Tag() == "email" {
+				return errors.New("Invalid email")
+			}
+		}
 	}
 
-	if userData.Password == "" {
-		return errors.New("Missing password")
-	}
-
-	if userData.FirstName == "" {
-		return errors.New("Missing firstName")
-	}
-
-	if userData.LastName == "" {
-		return errors.New("Missing lastName")
-	}
-
-	return nil
+	return err
 }
 
 func (a *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
@@ -79,14 +85,14 @@ func (a *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user := entity.User{
+	userObject := entity.User{
 		Email:     userData.Email,
 		Password:  userData.Password,
 		FirstName: userData.FirstName,
 		LastName:  userData.LastName,
 	}
 
-	userResponse, err := a.AuthUsecase.Register(&user)
+	userResponse, err := a.AuthUsecase.Register(&userObject)
 	if err != nil {
 		w.WriteHeader(409)
 		json.NewEncoder(w).Encode(httpErrorMessage{Error: err.Error()})

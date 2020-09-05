@@ -127,4 +127,22 @@ func TestRegister(t *testing.T) {
 		assert.Equal(t, http.StatusBadRequest, w.Code)
 		assert.Equal(t, "Missing lastName", jsonResponse["error"])
 	})
+
+	t.Run("invalid email", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(`{ "email": "invalidEmail", "password": "demouser", "firstName": "John", "lastName": "Doe" }`))
+
+		handler := _authHttpDelivery.AuthHandler{
+			AuthUsecase: mockUsecase,
+		}
+
+		handler.RegisterUser(w, r)
+
+		var jsonResponse map[string]interface{}
+
+		json.Unmarshal(w.Body.Bytes(), &jsonResponse)
+
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+		assert.Equal(t, "Invalid email", jsonResponse["error"])
+	})
 }
