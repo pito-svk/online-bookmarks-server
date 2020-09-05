@@ -14,6 +14,6 @@ func TestGet(t *testing.T) {
 
 		pingResponse := u.Get()
 
-		assert.Equal(t, pingResponse, "PONG")
+		assert.Equal(t, "PONG", pingResponse)
 	})
 }
