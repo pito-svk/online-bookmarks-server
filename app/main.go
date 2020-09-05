@@ -31,6 +31,8 @@ func main() {
 		port = ":2999"
 	}
 
+	logger := log.New(os.Stderr, "", log.Lshortfile)
+
 	r := chi.NewRouter()
 
 	pingUsecase := _pingUsecase.NewPingUsecase()
@@ -44,7 +46,7 @@ func main() {
 	userRepo := _userRepo.NewFileDBUserRepository(fileDB)
 
 	authUsecase := _authUsecase.NewAuthUsecase(userRepo)
-	_authHttpDelivery.NewAuthHandler(r, authUsecase)
+	_authHttpDelivery.NewAuthHandler(r, authUsecase, logger)
 
 	server := &http.Server{Addr: port, Handler: r}
 

@@ -2,8 +2,11 @@ package http_test
 
 import (
 	"encoding/json"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 
@@ -15,6 +18,9 @@ import (
 func TestRegister(t *testing.T) {
 	mockUserRepo := new(mocks.UserRepository)
 	mockUsecase := mocks.NewAuthUsecase(mockUserRepo)
+	mockLogger := log.New(os.Stderr, "", log.Lshortfile)
+
+	mockLogger.SetOutput(ioutil.Discard)
 
 	t.Run("success", func(t *testing.T) {
 		w := httptest.NewRecorder()
@@ -35,6 +41,7 @@ func TestRegister(t *testing.T) {
 
 		handler := _authHttpDelivery.AuthHandler{
 			AuthUsecase: mockUsecase,
+			Logger:      mockLogger,
 		}
 
 		handler.RegisterUser(w, r)
@@ -57,6 +64,7 @@ func TestRegister(t *testing.T) {
 
 		handler := _authHttpDelivery.AuthHandler{
 			AuthUsecase: mockUsecase,
+			Logger:      mockLogger,
 		}
 
 		handler.RegisterUser(w, r)
@@ -87,6 +95,7 @@ func TestRegister(t *testing.T) {
 
 		handler := _authHttpDelivery.AuthHandler{
 			AuthUsecase: mockUsecase,
+			Logger:      mockLogger,
 		}
 
 		handler.RegisterUser(w, r)
@@ -117,6 +126,7 @@ func TestRegister(t *testing.T) {
 
 		handler := _authHttpDelivery.AuthHandler{
 			AuthUsecase: mockUsecase,
+			Logger:      mockLogger,
 		}
 
 		handler.RegisterUser(w, r)
@@ -147,6 +157,7 @@ func TestRegister(t *testing.T) {
 
 		handler := _authHttpDelivery.AuthHandler{
 			AuthUsecase: mockUsecase,
+			Logger:      mockLogger,
 		}
 
 		handler.RegisterUser(w, r)
@@ -177,6 +188,7 @@ func TestRegister(t *testing.T) {
 
 		handler := _authHttpDelivery.AuthHandler{
 			AuthUsecase: mockUsecase,
+			Logger:      mockLogger,
 		}
 
 		handler.RegisterUser(w, r)
@@ -208,6 +220,7 @@ func TestRegister(t *testing.T) {
 
 		handler := _authHttpDelivery.AuthHandler{
 			AuthUsecase: mockUsecase,
+			Logger:      mockLogger,
 		}
 
 		handler.RegisterUser(w, r)
@@ -218,5 +231,27 @@ func TestRegister(t *testing.T) {
 
 		assert.Equal(t, http.StatusBadRequest, w.Code)
 		assert.Equal(t, "Invalid email", jsonResponse["error"])
+	})
+
+	t.Run("invalid attribute type", func(t *testing.T) {
+		w := httptest.NewRecorder()
+
+		userDataJSONString := `{ "email": "random@example.com", "password": "demouser", "firstName": 1, "lastName": "Doe" }`
+
+		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(userDataJSONString))
+
+		handler := _authHttpDelivery.AuthHandler{
+			AuthUsecase: mockUsecase,
+			Logger:      mockLogger,
+		}
+
+		handler.RegisterUser(w, r)
+
+		var jsonResponse map[string]interface{}
+
+		json.Unmarshal(w.Body.Bytes(), &jsonResponse)
+
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+		assert.Equal(t, "Error parsing JSON body", jsonResponse["error"])
 	})
 }

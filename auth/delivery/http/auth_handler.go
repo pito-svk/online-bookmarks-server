@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 
@@ -15,11 +16,13 @@ import (
 
 type AuthHandler struct {
 	AuthUsecase domain.AuthUsecase
+	Logger      *log.Logger
 }
 
-func NewAuthHandler(router *chi.Mux, us domain.AuthUsecase) {
+func NewAuthHandler(router *chi.Mux, us domain.AuthUsecase, logger *log.Logger) {
 	handler := &AuthHandler{
 		AuthUsecase: us,
+		Logger:      logger,
 	}
 
 	router.Post("/auth/register", handler.RegisterUser)
@@ -74,7 +77,10 @@ func (a *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&userData)
 	if err != nil {
 		w.WriteHeader(400)
-		json.NewEncoder(w).Encode(httpErrorMessage{Error: err.Error()})
+
+		a.Logger.Print(err)
+
+		json.NewEncoder(w).Encode(httpErrorMessage{Error: "Error parsing JSON body"})
 		return
 	}
 
