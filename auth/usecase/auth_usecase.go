@@ -1,8 +1,6 @@
 package usecase
 
 import (
-	"errors"
-
 	"github.com/dgrijalva/jwt-go"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
@@ -90,29 +88,4 @@ func (a *authUsecase) GenerateAuthToken(userID string, jwtSecret string) (string
 	}
 
 	return authToken, nil
-}
-
-func (a *authUsecase) Authenticate(loginData *entity.LoginData, jwtSecret string) (*entity.AuthData, error) {
-	user, err := a.userRepo.GetByEmail(loginData.Email)
-	if err != nil {
-		return nil, err
-	}
-
-	passwordMatch := ComparePasswords(user.Password, loginData.Password)
-	if passwordMatch == false {
-		return nil, errors.New("Invalid password")
-	}
-
-	claimData := map[string]interface{}{
-		"id": user.ID,
-	}
-
-	authToken, err := GenerateAuthToken(claimData, jwtSecret)
-	if err != nil {
-		return nil, err
-	}
-
-	return &entity.AuthData{
-		Token: authToken,
-	}, nil
 }
