@@ -20,9 +20,9 @@ type AuthHandler struct {
 	JwtSecret   string
 }
 
-func NewAuthHandler(router *chi.Mux, us domain.AuthUsecase, logger *logrus.Logger, jwtSecret string) {
+func NewAuthHandler(router *chi.Mux, usecase domain.AuthUsecase, logger *logrus.Logger, jwtSecret string) {
 	handler := &AuthHandler{
-		AuthUsecase: us,
+		AuthUsecase: usecase,
 		Logger:      logger,
 		JwtSecret:   jwtSecret,
 	}
