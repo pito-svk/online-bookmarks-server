@@ -2,15 +2,6 @@ package entity
 
 import "github.com/dgrijalva/jwt-go"
 
-type LoginData struct {
-	Email    string
-	Password string
-}
-
-type AuthData struct {
-	Token string
-}
-
 func GenerateAuthToken(claimData map[string]interface{}, jwtSecret string) (string, error) {
 	jwtClaims := jwt.MapClaims(claimData)
 
