@@ -5,24 +5,24 @@ import (
 	"peterparada.com/online-bookmarks/domain/entity"
 )
 
-type AuthUsecase struct {
+type authUsecase struct {
 	userRepo domain.UserRepository
 }
 
 func NewAuthUsecase(userRepo domain.UserRepository) domain.AuthUsecase {
-	return &AuthUsecase{
+	return &authUsecase{
 		userRepo,
 	}
 }
 
-func (a *AuthUsecase) RegisterUser(user *entity.User) (*entity.User, error) {
+func (a *authUsecase) RegisterUser(user *entity.User) (*entity.User, error) {
 	user.SetID()
 	user.SetHashedPassword()
 
 	return a.userRepo.Store(user)
 }
 
-func (a *AuthUsecase) GenerateAuthToken(userID string, jwtSecret string) (string, error) {
+func (a *authUsecase) GenerateAuthToken(userID string, jwtSecret string) (string, error) {
 	claimData := map[string]interface{}{
 		"id": userID,
 	}
