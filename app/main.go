@@ -33,33 +33,36 @@ func initLogger() *logrus.Logger {
 	return logger
 }
 
-func main() {
-	loadConfig()
-
+func getPort() string {
 	var port string = os.Getenv("ADDRESS")
 
 	if port == "" {
 		port = ":2999"
 	}
 
-	logger := initLogger()
-	jwtSecret := os.Getenv("JWT_SECRET")
+	return port
+}
+
+func main() {
+	loadConfig()
 
 	r := chi.NewRouter()
-
-	pingUsecase := _pingUsecase.NewPingUsecase()
-	_pingHttpDelivery.NewPingHandler(r, pingUsecase)
-
 	fileDB, err := scribble.New(".", nil)
 	if err != nil {
 		log.Fatal("Error loding file database")
 	}
+	logger := initLogger()
+	jwtSecret := os.Getenv("JWT_SECRET")
 
 	userRepo := _userRepo.NewFileDBUserRepository(fileDB)
 
+	pingUsecase := _pingUsecase.NewPingUsecase()
 	authUsecase := _authUsecase.NewAuthUsecase(userRepo)
+
+	_pingHttpDelivery.NewPingHandler(r, pingUsecase)
 	_authHttpDelivery.NewAuthHandler(r, authUsecase, logger, jwtSecret)
 
+	port := getPort()
 	server := &http.Server{Addr: port, Handler: r}
 
 	log.Printf("Server started on %s", port)
