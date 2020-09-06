@@ -89,7 +89,7 @@ func TestRegister(t *testing.T) {
 		json.Unmarshal(w.Body.Bytes(), &jsonResponse)
 
 		assert.Equal(t, http.StatusConflict, w.Code)
-		assert.Equal(t, "Email already exists", jsonResponse["error"])
+		assert.Equal(t, "User already exists", jsonResponse["error"])
 	})
 
 	t.Run("missing email", func(t *testing.T) {

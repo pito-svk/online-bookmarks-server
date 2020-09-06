@@ -14,7 +14,7 @@ type UserRepository struct {
 func (repo *UserRepository) Store(user *entity.User) (*entity.User, error) {
 	for _, existingUser := range repo.users {
 		if existingUser.Email == user.Email {
-			return nil, errors.New("Email already exists")
+			return nil, errors.New("User already exists")
 		}
 	}
 

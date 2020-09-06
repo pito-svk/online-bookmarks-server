@@ -102,6 +102,11 @@ func deliverConflictHttpError(w http.ResponseWriter, err error) {
 	json.NewEncoder(w).Encode(httpErrorMessage{Error: err.Error()})
 }
 
+func deliverInternalServerErrorHttpError(w http.ResponseWriter) {
+	w.WriteHeader(500)
+	json.NewEncoder(w).Encode(httpErrorMessage{Error: "Internal Server Error"})
+}
+
 func deliverUserCreatedResponse(w http.ResponseWriter, response userCreatedResponse) {
 	w.WriteHeader(201)
 	json.NewEncoder(w).Encode(response)
@@ -130,12 +135,12 @@ func composeUserCreatedResponse(user *entity.User, authToken string) userCreated
 	}
 }
 
-func (a *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
+func (authH *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	userData, err := parseUserDataFromRequestBody(r)
 	if err != nil {
-		a.Logger.Error(err)
+		authH.Logger.Error(err)
 		deliverErrorParsingJSONBodyHttpError(w)
 		return
 	}
@@ -148,12 +153,18 @@ func (a *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 
 	userObject := composeUserObjectFromUserData(userData)
 
-	userResponse, err := a.AuthUsecase.Register(&userObject)
+	userResponse, err := authH.AuthUsecase.Register(&userObject)
 	if err != nil {
-		deliverConflictHttpError(w, err)
+		fmt.Println(err)
+		if err.Error() == "User already exists" {
+			deliverConflictHttpError(w, err)
+		} else {
+			authH.Logger.Error(err)
+			deliverInternalServerErrorHttpError(w)
+		}
 		return
 	}
-	authToken, err := a.AuthUsecase.GenerateAuthToken(userResponse.ID, a.JwtSecret)
+	authToken, err := authH.AuthUsecase.GenerateAuthToken(userResponse.ID, authH.JwtSecret)
 
 	response := composeUserCreatedResponse(userResponse, authToken)
 
