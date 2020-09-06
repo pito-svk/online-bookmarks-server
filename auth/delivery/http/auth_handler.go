@@ -153,7 +153,6 @@ func (a *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		deliverConflictHttpError(w, err)
 		return
 	}
-
 	authToken, err := a.AuthUsecase.GenerateAuthToken(userResponse.ID, a.JwtSecret)
 
 	response := composeUserCreatedResponse(userResponse, authToken)
