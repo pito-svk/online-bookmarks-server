@@ -107,6 +107,15 @@ func deliverUserCreatedResponse(w http.ResponseWriter, response userCreatedRespo
 	json.NewEncoder(w).Encode(response)
 }
 
+func composeUserObjectFromUserData(userData *UserDataInput) entity.User {
+	return entity.User{
+		Email:     userData.Email,
+		Password:  userData.Password,
+		FirstName: userData.FirstName,
+		LastName:  userData.LastName,
+	}
+}
+
 func (a *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -123,12 +132,7 @@ func (a *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userObject := entity.User{
-		Email:     userData.Email,
-		Password:  userData.Password,
-		FirstName: userData.FirstName,
-		LastName:  userData.LastName,
-	}
+	userObject := composeUserObjectFromUserData(userData)
 
 	userResponse, err := a.AuthUsecase.Register(&userObject)
 	if err != nil {
