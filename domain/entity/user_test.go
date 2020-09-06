@@ -37,7 +37,7 @@ func TestHashPassword(t *testing.T) {
 	})
 }
 
-func TestClearPassword(t *testing.T) {
+func TestSetHashedPassword(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		user := User{
 			ID:        "5f555a4686dbe11fc3adbb9b",
@@ -47,7 +47,21 @@ func TestClearPassword(t *testing.T) {
 			LastName:  "Doe",
 		}
 
-		assert.Equal(t, user.Password, "hashedPassword")
+		user.SetHashedPassword()
+
+		assert.NotEqual(t, user.Password, "hashedPassword")
+	})
+}
+
+func TestClearPassword(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		user := User{
+			ID:        "5f555a4686dbe11fc3adbb9b",
+			Email:     "random@example.com",
+			Password:  "hashedPassword",
+			FirstName: "John",
+			LastName:  "Doe",
+		}
 
 		user.ClearPassword()
 
