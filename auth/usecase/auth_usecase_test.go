@@ -23,6 +23,14 @@ func TestGenerateHexID(t *testing.T) {
 	})
 }
 
+func TestGenerateId(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		id := usecase.GenerateID()
+
+		assert.NotEmpty(t, id)
+	})
+}
+
 func TestHashPassword(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		password := "randomPassword"
