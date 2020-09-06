@@ -24,7 +24,7 @@ func TestRegister(t *testing.T) {
 
 		duplicateUserData := userData
 
-		registeredUser, err := u.Register(&userData)
+		registeredUser, err := u.RegisterUser(&userData)
 
 		assert.NoError(t, err)
 
@@ -41,7 +41,7 @@ func TestRegister(t *testing.T) {
 			LastName:  "Appleseed",
 		}
 
-		secondRegisteredUser, err := u.Register(&secondUserData)
+		secondRegisteredUser, err := u.RegisterUser(&secondUserData)
 
 		assert.NoError(t, err)
 
@@ -51,7 +51,7 @@ func TestRegister(t *testing.T) {
 		assert.Equal(t, "Martin", secondRegisteredUser.FirstName)
 		assert.Equal(t, "Appleseed", secondRegisteredUser.LastName)
 
-		duplicateUser, err := u.Register(&duplicateUserData)
+		duplicateUser, err := u.RegisterUser(&duplicateUserData)
 
 		assert.Error(t, err)
 		assert.Nil(t, duplicateUser)

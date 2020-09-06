@@ -3,7 +3,7 @@ package domain
 import "peterparada.com/online-bookmarks/domain/entity"
 
 type AuthUsecase interface {
-	Register(user *entity.User) (*entity.User, error)
+	RegisterUser(user *entity.User) (*entity.User, error)
 	GenerateAuthToken(userID string, jwtSecret string) (string, error)
 }
 

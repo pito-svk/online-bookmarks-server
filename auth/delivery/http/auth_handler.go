@@ -155,7 +155,7 @@ func (authH *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userObject := composeUserObjectFromUserData(userData)
-	userResponse, err := authH.AuthUsecase.Register(&userObject)
+	userResponse, err := authH.AuthUsecase.RegisterUser(&userObject)
 	if err != nil {
 		if err.Error() == "User already exists" {
 			deliverConflictHttpError(w, err)

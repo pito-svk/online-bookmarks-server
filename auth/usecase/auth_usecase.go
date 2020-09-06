@@ -15,7 +15,7 @@ func NewAuthUsecase(userRepo domain.UserRepository) domain.AuthUsecase {
 	}
 }
 
-func (authU *authUsecase) Register(u *entity.User) (*entity.User, error) {
+func (authU *authUsecase) RegisterUser(u *entity.User) (*entity.User, error) {
 	u.SetID()
 
 	err := u.SetHashedPassword(u.Password)
