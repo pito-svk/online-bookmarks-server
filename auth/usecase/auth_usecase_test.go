@@ -166,9 +166,9 @@ func TestLogin(t *testing.T) {
 		authData, err := u.Authenticate(&loginData, jwtSecret)
 
 		assert.NoError(t, err)
-		assert.NotEmpty(t, authData.AuthToken)
+		assert.NotEmpty(t, authData.Token)
 
-		token, err := jwt.Parse(authData.AuthToken, func(token *jwt.Token) (interface{}, error) {
+		token, err := jwt.Parse(authData.Token, func(token *jwt.Token) (interface{}, error) {
 			return []byte(jwtSecret), nil
 		})
 

@@ -6,5 +6,5 @@ type LoginData struct {
 }
 
 type AuthData struct {
-	AuthToken string
+	Token string
 }

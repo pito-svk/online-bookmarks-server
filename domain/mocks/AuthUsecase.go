@@ -37,6 +37,6 @@ func (a *AuthUsecase) GenerateAuthToken(userID string, jwtSecret string) (string
 
 func (a *AuthUsecase) Authenticate(loginData *entity.LoginData, jwtSecret string) (*entity.AuthData, error) {
 	return &entity.AuthData{
-		AuthToken: "ABC",
+		Token: "ABC",
 	}, nil
 }

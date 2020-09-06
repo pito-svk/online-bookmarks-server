@@ -113,6 +113,6 @@ func (a *authUsecase) Authenticate(loginData *entity.LoginData, jwtSecret string
 	}
 
 	return &entity.AuthData{
-		AuthToken: authToken,
+		Token: authToken,
 	}, nil
 }
