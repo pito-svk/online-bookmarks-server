@@ -47,8 +47,9 @@ func TestSetHashedPassword(t *testing.T) {
 			LastName:  "Doe",
 		}
 
-		user.SetHashedPassword()
+		err := user.SetHashedPassword()
 
+		assert.NoError(t, err)
 		assert.NotEqual(t, user.Password, "hashedPassword")
 	})
 }
