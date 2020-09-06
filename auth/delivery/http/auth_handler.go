@@ -37,7 +37,7 @@ type userDataInput struct {
 	LastName  string `json:"lastName" validate:"required"`
 }
 
-type AuthData struct {
+type authData struct {
 	Token string `json:"token"`
 }
 
@@ -46,7 +46,7 @@ type userCreatedResponse struct {
 	Email     string   `json:"email"`
 	FirstName string   `json:"firstName"`
 	LastName  string   `json:"lastName"`
-	AuthData  AuthData `json:"authData"`
+	AuthData  authData `json:"authData"`
 }
 
 type httpErrorMessage struct {
@@ -126,7 +126,7 @@ func composeUserObjectFromUserData(userData *userDataInput) entity.User {
 }
 
 func composeUserCreatedResponse(user *entity.User, authToken string) userCreatedResponse {
-	authData := AuthData{
+	auth := authData{
 		Token: authToken,
 	}
 
@@ -135,7 +135,7 @@ func composeUserCreatedResponse(user *entity.User, authToken string) userCreated
 		Email:     user.Email,
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
-		AuthData:  authData,
+		AuthData:  auth,
 	}
 }
 
