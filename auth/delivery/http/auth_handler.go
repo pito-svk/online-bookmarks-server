@@ -76,6 +76,11 @@ func validateCreateUserInput(userData *UserDataInput) error {
 	return err
 }
 
+func deliverErrorParsingJSONBodyError(w http.ResponseWriter) {
+	w.WriteHeader(400)
+	json.NewEncoder(w).Encode(httpErrorMessage{Error: "Error parsing JSON body"})
+}
+
 func (a *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	userData := UserDataInput{}
 
@@ -83,11 +88,8 @@ func (a *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&userData)
 	if err != nil {
-		w.WriteHeader(400)
-
 		a.Logger.Error(err)
-
-		json.NewEncoder(w).Encode(httpErrorMessage{Error: "Error parsing JSON body"})
+		deliverErrorParsingJSONBodyError(w)
 		return
 	}
 
