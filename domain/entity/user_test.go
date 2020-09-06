@@ -37,6 +37,21 @@ func TestHashPassword(t *testing.T) {
 	})
 }
 
+func TestSetID(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		user := User{
+			Email:     "random@example.com",
+			Password:  "hashedPassword",
+			FirstName: "John",
+			LastName:  "Doe",
+		}
+
+		user.SetID()
+
+		assert.NotEmpty(t, user.ID)
+	})
+}
+
 func TestSetHashedPassword(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		user := User{
