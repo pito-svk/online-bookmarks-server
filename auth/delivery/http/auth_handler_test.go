@@ -1,4 +1,4 @@
-package http_test
+package http
 
 import (
 	"encoding/json"
@@ -9,7 +9,6 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/stretchr/testify/assert"
-	_authHttpDelivery "peterparada.com/online-bookmarks/auth/delivery/http"
 	"peterparada.com/online-bookmarks/domain/mocks"
 )
 
@@ -22,7 +21,7 @@ func TestRegister(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		w := httptest.NewRecorder()
 
-		userData := _authHttpDelivery.UserDataInput{
+		userData := userDataInput{
 			Email:     "random@example.com",
 			Password:  "demouser",
 			FirstName: "John",
@@ -36,7 +35,7 @@ func TestRegister(t *testing.T) {
 
 		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(string(userDataJSON)))
 
-		handler := _authHttpDelivery.AuthHandler{
+		handler := AuthHandler{
 			AuthUsecase: mockUsecase,
 			Logger:      mockLogger,
 			JwtSecret:   jwtSecret,
@@ -77,7 +76,7 @@ func TestRegister(t *testing.T) {
 		w := httptest.NewRecorder()
 		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(`{ "email": "random@example.com", "password": "demouser", "firstName": "John", "lastName": "Doe" }`))
 
-		handler := _authHttpDelivery.AuthHandler{
+		handler := AuthHandler{
 			AuthUsecase: mockUsecase,
 			Logger:      mockLogger,
 		}
@@ -95,7 +94,7 @@ func TestRegister(t *testing.T) {
 	t.Run("missing email", func(t *testing.T) {
 		w := httptest.NewRecorder()
 
-		userData := _authHttpDelivery.UserDataInput{
+		userData := userDataInput{
 			Password:  "demouser",
 			FirstName: "John",
 			LastName:  "Doe",
@@ -108,7 +107,7 @@ func TestRegister(t *testing.T) {
 
 		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(string(userDataJSON)))
 
-		handler := _authHttpDelivery.AuthHandler{
+		handler := AuthHandler{
 			AuthUsecase: mockUsecase,
 			Logger:      mockLogger,
 		}
@@ -126,7 +125,7 @@ func TestRegister(t *testing.T) {
 	t.Run("missing password", func(t *testing.T) {
 		w := httptest.NewRecorder()
 
-		userData := _authHttpDelivery.UserDataInput{
+		userData := userDataInput{
 			Email:     "random@example.com",
 			FirstName: "John",
 			LastName:  "Doe",
@@ -139,7 +138,7 @@ func TestRegister(t *testing.T) {
 
 		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(string(userDataJSON)))
 
-		handler := _authHttpDelivery.AuthHandler{
+		handler := AuthHandler{
 			AuthUsecase: mockUsecase,
 			Logger:      mockLogger,
 		}
@@ -157,7 +156,7 @@ func TestRegister(t *testing.T) {
 	t.Run("missing firstName", func(t *testing.T) {
 		w := httptest.NewRecorder()
 
-		userData := _authHttpDelivery.UserDataInput{
+		userData := userDataInput{
 			Email:    "random@example.com",
 			Password: "demouser",
 			LastName: "Doe",
@@ -170,7 +169,7 @@ func TestRegister(t *testing.T) {
 
 		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(string(userDataJSON)))
 
-		handler := _authHttpDelivery.AuthHandler{
+		handler := AuthHandler{
 			AuthUsecase: mockUsecase,
 			Logger:      mockLogger,
 		}
@@ -188,7 +187,7 @@ func TestRegister(t *testing.T) {
 	t.Run("missing lastName", func(t *testing.T) {
 		w := httptest.NewRecorder()
 
-		userData := _authHttpDelivery.UserDataInput{
+		userData := userDataInput{
 			Email:     "random@example.com",
 			Password:  "demouser",
 			FirstName: "John",
@@ -201,7 +200,7 @@ func TestRegister(t *testing.T) {
 
 		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(string(userDataJSON)))
 
-		handler := _authHttpDelivery.AuthHandler{
+		handler := AuthHandler{
 			AuthUsecase: mockUsecase,
 			Logger:      mockLogger,
 		}
@@ -219,7 +218,7 @@ func TestRegister(t *testing.T) {
 	t.Run("invalid email", func(t *testing.T) {
 		w := httptest.NewRecorder()
 
-		userData := _authHttpDelivery.UserDataInput{
+		userData := userDataInput{
 			Email:     "invalidEmail",
 			Password:  "demouser",
 			FirstName: "John",
@@ -233,7 +232,7 @@ func TestRegister(t *testing.T) {
 
 		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(string(userDataJSON)))
 
-		handler := _authHttpDelivery.AuthHandler{
+		handler := AuthHandler{
 			AuthUsecase: mockUsecase,
 			Logger:      mockLogger,
 		}
@@ -255,7 +254,7 @@ func TestRegister(t *testing.T) {
 
 		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(userDataJSONString))
 
-		handler := _authHttpDelivery.AuthHandler{
+		handler := AuthHandler{
 			AuthUsecase: mockUsecase,
 			Logger:      mockLogger,
 		}

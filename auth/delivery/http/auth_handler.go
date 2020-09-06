@@ -30,7 +30,7 @@ func NewAuthHandler(router *chi.Mux, usecase domain.AuthUsecase, logger *logrus.
 	router.Post("/auth/register", handler.RegisterUser)
 }
 
-type UserDataInput struct {
+type userDataInput struct {
 	Email     string `json:"email" validate:"required,email"`
 	Password  string `json:"password" validate:"required"`
 	FirstName string `json:"firstName" validate:"required"`
@@ -57,8 +57,8 @@ func setJSONContentTypeInResponse(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
 }
 
-func parseUserDataFromRequestBody(r *http.Request) (*UserDataInput, error) {
-	userData := UserDataInput{}
+func parseUserDataFromRequestBody(r *http.Request) (*userDataInput, error) {
+	userData := userDataInput{}
 
 	err := json.NewDecoder(r.Body).Decode(&userData)
 	if err != nil {
@@ -68,7 +68,7 @@ func parseUserDataFromRequestBody(r *http.Request) (*UserDataInput, error) {
 	return &userData, nil
 }
 
-func validateCreateUserInput(userData *UserDataInput) error {
+func validateCreateUserInput(userData *userDataInput) error {
 	v := validator.New()
 
 	err := v.Struct(userData)
@@ -116,7 +116,7 @@ func deliverUserCreatedResponse(w http.ResponseWriter, response userCreatedRespo
 	json.NewEncoder(w).Encode(response)
 }
 
-func composeUserObjectFromUserData(userData *UserDataInput) entity.User {
+func composeUserObjectFromUserData(userData *userDataInput) entity.User {
 	return entity.User{
 		Email:     userData.Email,
 		Password:  userData.Password,
