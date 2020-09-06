@@ -102,6 +102,11 @@ func deliverConflictHttpError(w http.ResponseWriter, err error) {
 	json.NewEncoder(w).Encode(httpErrorMessage{Error: err.Error()})
 }
 
+func deliverUserCreatedResponse(w http.ResponseWriter, response userCreatedResponse) {
+	w.WriteHeader(201)
+	json.NewEncoder(w).Encode(response)
+}
+
 func (a *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -145,7 +150,6 @@ func (a *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		AuthData:  authData,
 	}
 
-	w.WriteHeader(201)
-	json.NewEncoder(w).Encode(response)
+	deliverUserCreatedResponse(w, response)
 	return
 }
