@@ -18,7 +18,7 @@ func (repo *UserRepository) Store(user *entity.User) (*entity.User, error) {
 	}
 
 	user.SetID()
-	err := user.SetHashedPassword(user.Password)
+	err := user.SetHashedPassword()
 	if err != nil {
 		return nil, err
 	}

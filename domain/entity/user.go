@@ -34,8 +34,8 @@ func (user *User) SetID() {
 	user.ID = GenerateID()
 }
 
-func (user *User) SetHashedPassword(password string) error {
-	hashedPassword, err := hashPassword(password)
+func (user *User) SetHashedPassword() error {
+	hashedPassword, err := hashPassword(user.Password)
 	if err != nil {
 		return err
 	}
