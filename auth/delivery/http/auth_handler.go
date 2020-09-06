@@ -53,6 +53,21 @@ type httpErrorMessage struct {
 	Error string `json:"error"`
 }
 
+func setJSONContentTypeInResponse(w http.ResponseWriter) {
+	w.Header().Set("Content-Type", "application/json")
+}
+
+func parseUserDataFromRequestBody(r *http.Request) (*UserDataInput, error) {
+	userData := UserDataInput{}
+
+	err := json.NewDecoder(r.Body).Decode(&userData)
+	if err != nil {
+		return nil, err
+	}
+
+	return &userData, nil
+}
+
 func validateCreateUserInput(userData *UserDataInput) error {
 	v := validator.New()
 
@@ -74,17 +89,6 @@ func validateCreateUserInput(userData *UserDataInput) error {
 	}
 
 	return err
-}
-
-func parseUserDataFromRequestBody(r *http.Request) (*UserDataInput, error) {
-	userData := UserDataInput{}
-
-	err := json.NewDecoder(r.Body).Decode(&userData)
-	if err != nil {
-		return nil, err
-	}
-
-	return &userData, nil
 }
 
 func deliverErrorParsingJSONBodyHttpError(w http.ResponseWriter) {
@@ -136,7 +140,7 @@ func composeUserCreatedResponse(user *entity.User, authToken string) userCreated
 }
 
 func (authH *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+	setJSONContentTypeInResponse(w)
 
 	userData, err := parseUserDataFromRequestBody(r)
 	if err != nil {
