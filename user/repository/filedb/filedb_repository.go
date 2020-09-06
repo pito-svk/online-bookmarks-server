@@ -2,7 +2,6 @@ package filedb
 
 import (
 	"errors"
-	"log"
 
 	"github.com/nanobox-io/golang-scribble"
 	"peterparada.com/online-bookmarks/domain"

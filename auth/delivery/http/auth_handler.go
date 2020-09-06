@@ -116,6 +116,20 @@ func composeUserObjectFromUserData(userData *UserDataInput) entity.User {
 	}
 }
 
+func composeUserCreatedResponse(user *entity.User, authToken string) userCreatedResponse {
+	authData := AuthData{
+		Token: authToken,
+	}
+
+	return userCreatedResponse{
+		ID:        user.ID,
+		Email:     user.Email,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		AuthData:  authData,
+	}
+}
+
 func (a *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -142,17 +156,7 @@ func (a *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 
 	authToken, err := a.AuthUsecase.GenerateAuthToken(userResponse.ID, a.JwtSecret)
 
-	authData := AuthData{
-		Token: authToken,
-	}
-
-	response := userCreatedResponse{
-		ID:        userResponse.ID,
-		Email:     userResponse.Email,
-		FirstName: userResponse.FirstName,
-		LastName:  userResponse.LastName,
-		AuthData:  authData,
-	}
+	response := composeUserCreatedResponse(userResponse, authToken)
 
 	deliverUserCreatedResponse(w, response)
 	return
