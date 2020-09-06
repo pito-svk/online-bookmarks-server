@@ -27,7 +27,7 @@ func (userRepo *fileDBUserRepo) Store(user *entity.User) (*entity.User, error) {
 
 	err = userRepo.DB.Write("userdata", user.Email, user)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	return user, nil
