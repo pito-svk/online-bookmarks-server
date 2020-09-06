@@ -76,13 +76,18 @@ func validateCreateUserInput(userData *UserDataInput) error {
 	return err
 }
 
-func deliverErrorParsingJSONBodyError(w http.ResponseWriter) {
+func deliverErrorParsingJSONBodyHttpError(w http.ResponseWriter) {
 	w.WriteHeader(400)
 	json.NewEncoder(w).Encode(httpErrorMessage{Error: "Error parsing JSON body"})
 }
 
-func deliverBadRequestError(w http.ResponseWriter, err error) {
+func deliverBadRequestHttpError(w http.ResponseWriter, err error) {
 	w.WriteHeader(400)
+	json.NewEncoder(w).Encode(httpErrorMessage{Error: err.Error()})
+}
+
+func deliverConflictHttpError(w http.ResponseWriter, err error) {
+	w.WriteHeader(409)
 	json.NewEncoder(w).Encode(httpErrorMessage{Error: err.Error()})
 }
 
@@ -94,13 +99,13 @@ func (a *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&userData)
 	if err != nil {
 		a.Logger.Error(err)
-		deliverErrorParsingJSONBodyError(w)
+		deliverErrorParsingJSONBodyHttpError(w)
 		return
 	}
 
 	err = validateCreateUserInput(&userData)
 	if err != nil {
-		deliverBadRequestError(w, err)
+		deliverBadRequestHttpError(w, err)
 		return
 	}
 
@@ -113,8 +118,7 @@ func (a *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 
 	userResponse, err := a.AuthUsecase.Register(&userObject)
 	if err != nil {
-		w.WriteHeader(409)
-		json.NewEncoder(w).Encode(httpErrorMessage{Error: err.Error()})
+		deliverConflictHttpError(w, err)
 		return
 	}
 
