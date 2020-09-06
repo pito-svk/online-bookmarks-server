@@ -144,7 +144,6 @@ func (authH *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		deliverErrorParsingJSONBodyHttpError(w)
 		return
 	}
-
 	err = validateCreateUserInput(userData)
 	if err != nil {
 		deliverBadRequestHttpError(w, err)
@@ -152,7 +151,6 @@ func (authH *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userObject := composeUserObjectFromUserData(userData)
-
 	userResponse, err := authH.AuthUsecase.Register(&userObject)
 	if err != nil {
 		if err.Error() == "User already exists" {
@@ -164,7 +162,6 @@ func (authH *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	authToken, err := authH.AuthUsecase.GenerateAuthToken(userResponse.ID, authH.JwtSecret)
-
 	response := composeUserCreatedResponse(userResponse, authToken)
 
 	deliverUserCreatedResponse(w, response)
