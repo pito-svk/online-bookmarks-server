@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"github.com/google/uuid"
-	"peterparada.com/online-bookmarks/auth/usecase"
 	"peterparada.com/online-bookmarks/domain/entity"
 )
 
@@ -21,7 +20,7 @@ func (repo *UserRepository) Store(user *entity.User) (*entity.User, error) {
 
 	user.ID = uuid.New().String()
 
-	hashedPassword, err := usecase.HashPassword(user.Password)
+	hashedPassword, err := entity.HashPassword(user.Password)
 	if err != nil {
 		return nil, err
 	}

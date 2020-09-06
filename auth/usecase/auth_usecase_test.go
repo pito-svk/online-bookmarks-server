@@ -1,7 +1,6 @@
 package usecase_test
 
 import (
-	"encoding/hex"
 	"testing"
 
 	"github.com/dgrijalva/jwt-go"
@@ -10,36 +9,6 @@ import (
 	"peterparada.com/online-bookmarks/domain/entity"
 	"peterparada.com/online-bookmarks/domain/mocks"
 )
-
-func TestGenerateHexID(t *testing.T) {
-	t.Run("success", func(t *testing.T) {
-		hexId := usecase.GenerateHexID()
-
-		decimalStringId := make([]byte, hex.DecodedLen(len(hexId)))
-
-		_, err := hex.Decode(decimalStringId, []byte(hexId))
-
-		assert.NoError(t, err)
-	})
-}
-
-func TestGenerateId(t *testing.T) {
-	t.Run("success", func(t *testing.T) {
-		id := usecase.GenerateID()
-
-		assert.NotEmpty(t, id)
-	})
-}
-
-func TestHashPassword(t *testing.T) {
-	t.Run("success", func(t *testing.T) {
-		password := "randomPassword"
-		hashedPassword, err := usecase.HashPassword(password)
-
-		assert.NoError(t, err)
-		assert.NotEqual(t, password, hashedPassword)
-	})
-}
 
 func TestComparePasswords(t *testing.T) {
 	t.Run("password match", func(t *testing.T) {

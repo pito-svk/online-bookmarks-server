@@ -17,8 +17,8 @@ func NewAuthUsecase(userRepo domain.UserRepository) domain.AuthUsecase {
 }
 
 func (a *AuthUsecase) Register(user *entity.User) (*entity.User, error) {
-	user.ID = usecase.GenerateID()
-	hashedPassword, _ := usecase.HashPassword(user.Password)
+	user.ID = entity.GenerateID()
+	hashedPassword, _ := entity.HashPassword(user.Password)
 
 	user.Password = hashedPassword
 

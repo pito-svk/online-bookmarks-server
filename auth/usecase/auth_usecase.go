@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"github.com/dgrijalva/jwt-go"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 	"peterparada.com/online-bookmarks/domain"
 	"peterparada.com/online-bookmarks/domain/entity"
@@ -16,23 +15,6 @@ func NewAuthUsecase(userRepo domain.UserRepository) domain.AuthUsecase {
 	return &authUsecase{
 		userRepo,
 	}
-}
-
-func GenerateHexID() string {
-	return primitive.NewObjectID().Hex()
-}
-
-func GenerateID() string {
-	return GenerateHexID()
-}
-
-func HashPassword(password string) (string, error) {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		return "", err
-	}
-
-	return string(hashedPassword), nil
 }
 
 func ComparePasswords(hashedPassword string, password string) bool {
@@ -57,17 +39,15 @@ func GenerateAuthToken(claimData map[string]interface{}, jwtSecret string) (stri
 	return tokenString, nil
 }
 
-func (a *authUsecase) Register(u *entity.User) (*entity.User, error) {
-	u.ID = GenerateID()
+func (authU *authUsecase) Register(u *entity.User) (*entity.User, error) {
+	u.SetID()
 
-	hashedPassword, err := HashPassword(u.Password)
+	err := u.SetHashedPassword(u.Password)
 	if err != nil {
 		return nil, err
 	}
 
-	u.Password = hashedPassword
-
-	user, err := a.userRepo.Store(u)
+	user, err := authU.userRepo.Store(u)
 	if err != nil {
 		return nil, err
 	}
