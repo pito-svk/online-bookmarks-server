@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"golang.org/x/crypto/bcrypt"
 	"peterparada.com/online-bookmarks/domain"
 	"peterparada.com/online-bookmarks/domain/entity"
 )
@@ -14,15 +13,6 @@ func NewAuthUsecase(userRepo domain.UserRepository) domain.AuthUsecase {
 	return &authUsecase{
 		userRepo,
 	}
-}
-
-func ComparePasswords(hashedPassword string, password string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
-	if err != nil {
-		return false
-	}
-
-	return true
 }
 
 func (authU *authUsecase) Register(u *entity.User) (*entity.User, error) {

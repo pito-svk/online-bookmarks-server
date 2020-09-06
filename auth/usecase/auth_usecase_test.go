@@ -9,35 +9,6 @@ import (
 	"peterparada.com/online-bookmarks/domain/mocks"
 )
 
-func TestComparePasswords(t *testing.T) {
-	t.Run("password match", func(t *testing.T) {
-		hashedPassword := "$2a$10$F6U1i4rENwIWiZXBigkxTe3bXV.WixvL10MSWRY6e9icQXuXWmT5."
-		password := "randomPassword"
-
-		passwordMatch := usecase.ComparePasswords(hashedPassword, password)
-
-		assert.True(t, passwordMatch)
-	})
-
-	t.Run("password match 2", func(t *testing.T) {
-		hashedPassword := "$2a$10$cbHkZbUT513CN4aIKVAq8OEs1QBr/qk562NiNtVQ.rakI/qrzxSBi"
-		password := "randomPassword"
-
-		passwordMatch := usecase.ComparePasswords(hashedPassword, password)
-
-		assert.True(t, passwordMatch)
-	})
-
-	t.Run("no match", func(t *testing.T) {
-		hashedPassword := "$2a$10$F6U1i4rENwIWiZXBigkxTe3bXV.WixvL10MSWRY6e9icQXuXWmT5."
-		password := "wrongPassword"
-
-		passwordMatch := usecase.ComparePasswords(hashedPassword, password)
-
-		assert.False(t, passwordMatch)
-	})
-}
-
 func TestRegister(t *testing.T) {
 	mockUserRepo := new(mocks.UserRepository)
 
