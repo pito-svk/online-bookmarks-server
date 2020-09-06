@@ -1,7 +1,6 @@
 package mocks
 
 import (
-	"peterparada.com/online-bookmarks/auth/usecase"
 	"peterparada.com/online-bookmarks/domain"
 	"peterparada.com/online-bookmarks/domain/entity"
 )
@@ -30,7 +29,7 @@ func (a *AuthUsecase) GenerateAuthToken(userID string, jwtSecret string) (string
 		"id": userID,
 	}
 
-	authToken, _ := usecase.GenerateAuthToken(claimData, jwtSecret)
+	authToken, _ := entity.GenerateAuthToken(claimData, jwtSecret)
 
 	return authToken, nil
 }

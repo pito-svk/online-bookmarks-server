@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 	"peterparada.com/online-bookmarks/domain"
 	"peterparada.com/online-bookmarks/domain/entity"
@@ -24,19 +23,6 @@ func ComparePasswords(hashedPassword string, password string) bool {
 	}
 
 	return true
-}
-
-func GenerateAuthToken(claimData map[string]interface{}, jwtSecret string) (string, error) {
-	jwtClaims := jwt.MapClaims(claimData)
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwtClaims)
-
-	tokenString, err := token.SignedString([]byte(jwtSecret))
-	if err != nil {
-		return "", err
-	}
-
-	return tokenString, nil
 }
 
 func (authU *authUsecase) Register(u *entity.User) (*entity.User, error) {
@@ -62,7 +48,7 @@ func (a *authUsecase) GenerateAuthToken(userID string, jwtSecret string) (string
 		"id": userID,
 	}
 
-	authToken, err := GenerateAuthToken(claimData, jwtSecret)
+	authToken, err := entity.GenerateAuthToken(claimData, jwtSecret)
 	if err != nil {
 		return "", err
 	}
