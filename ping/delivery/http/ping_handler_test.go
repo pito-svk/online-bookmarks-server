@@ -1,4 +1,4 @@
-package http_test
+package http
 
 import (
 	"net/http"
@@ -8,7 +8,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"peterparada.com/online-bookmarks/domain/mocks"
-	_pingHttpDelivery "peterparada.com/online-bookmarks/ping/delivery/http"
 )
 
 func TestGet(t *testing.T) {
@@ -17,7 +16,7 @@ func TestGet(t *testing.T) {
 
 	mockUsecase := new(mocks.PingUsecase)
 
-	handler := _pingHttpDelivery.PingHandler{
+	handler := PingHandler{
 		PingUsecase: mockUsecase,
 	}
 

@@ -1,16 +1,15 @@
-package usecase_test
+package usecase
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"peterparada.com/online-bookmarks/ping/usecase"
 )
 
 func TestGet(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
-		u := usecase.NewPingUsecase()
+		u := NewPingUsecase()
 
 		pingResponse := u.Get()
 

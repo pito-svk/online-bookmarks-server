@@ -1,11 +1,10 @@
-package entity_test
+package entity
 
 import (
 	"testing"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/stretchr/testify/assert"
-	"peterparada.com/online-bookmarks/domain/entity"
 )
 
 func TestGenerateAuthToken(t *testing.T) {
@@ -16,7 +15,7 @@ func TestGenerateAuthToken(t *testing.T) {
 			"id": "5f5410bd3cfca9b341bdfe4c",
 		}
 
-		authToken, err := entity.GenerateAuthToken(claimData, jwtSecret)
+		authToken, err := GenerateAuthToken(claimData, jwtSecret)
 
 		assert.NoError(t, err)
 		assert.NotEmpty(t, authToken)
