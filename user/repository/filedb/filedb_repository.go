@@ -32,3 +32,7 @@ func (userRepo *fileDBUserRepo) Store(user *entity.User) (*entity.User, error) {
 
 	return user, nil
 }
+
+func (userRepo *fileDBUserRepo) GetByEmail(email string) (entity.User, error) {
+	return entity.User{}, nil
+}

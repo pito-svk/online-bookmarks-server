@@ -17,12 +17,14 @@ import (
 type AuthHandler struct {
 	AuthUsecase domain.AuthUsecase
 	Logger      *logrus.Logger
+	JwtSecret   string
 }
 
-func NewAuthHandler(router *chi.Mux, us domain.AuthUsecase, logger *logrus.Logger) {
+func NewAuthHandler(router *chi.Mux, us domain.AuthUsecase, logger *logrus.Logger, jwtSecret string) {
 	handler := &AuthHandler{
 		AuthUsecase: us,
 		Logger:      logger,
+		JwtSecret:   jwtSecret,
 	}
 
 	router.Post("/auth/register", handler.RegisterUser)
@@ -35,11 +37,16 @@ type UserDataInput struct {
 	LastName  string `json:"lastName" validate:"required"`
 }
 
+type AuthData struct {
+	Token string `json:"token"`
+}
+
 type userCreatedResponse struct {
-	ID        string `json:"id"`
-	Email     string `json:"email"`
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
+	ID        string   `json:"id"`
+	Email     string   `json:"email"`
+	FirstName string   `json:"firstName"`
+	LastName  string   `json:"lastName"`
+	AuthData  AuthData `json:"authData"`
 }
 
 type httpErrorMessage struct {
@@ -105,11 +112,18 @@ func (a *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	authToken, err := a.AuthUsecase.GenerateAuthToken(userResponse.ID, a.JwtSecret)
+
+	authData := AuthData{
+		Token: authToken,
+	}
+
 	response := userCreatedResponse{
 		ID:        userResponse.ID,
 		Email:     userResponse.Email,
 		FirstName: userResponse.FirstName,
 		LastName:  userResponse.LastName,
+		AuthData:  authData,
 	}
 
 	w.WriteHeader(201)

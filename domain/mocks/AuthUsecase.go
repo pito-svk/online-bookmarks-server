@@ -24,3 +24,19 @@ func (a *AuthUsecase) Register(user *entity.User) (*entity.User, error) {
 
 	return a.userRepo.Store(user)
 }
+
+func (a *AuthUsecase) GenerateAuthToken(userID string, jwtSecret string) (string, error) {
+	claimData := map[string]interface{}{
+		"id": userID,
+	}
+
+	authToken, _ := usecase.GenerateAuthToken(claimData, jwtSecret)
+
+	return authToken, nil
+}
+
+func (a *AuthUsecase) Authenticate(loginData *entity.LoginData, jwtSecret string) (*entity.AuthData, error) {
+	return &entity.AuthData{
+		AuthToken: "ABC",
+	}, nil
+}

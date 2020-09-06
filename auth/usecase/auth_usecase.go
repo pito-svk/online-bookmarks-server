@@ -79,6 +79,19 @@ func (a *authUsecase) Register(u *entity.User) (*entity.User, error) {
 	return user, nil
 }
 
+func (a *authUsecase) GenerateAuthToken(userID string, jwtSecret string) (string, error) {
+	claimData := map[string]interface{}{
+		"id": userID,
+	}
+
+	authToken, err := GenerateAuthToken(claimData, jwtSecret)
+	if err != nil {
+		return "", err
+	}
+
+	return authToken, nil
+}
+
 func (a *authUsecase) Authenticate(loginData *entity.LoginData, jwtSecret string) (*entity.AuthData, error) {
 	user, err := a.userRepo.GetByEmail(loginData.Email)
 	if err != nil {

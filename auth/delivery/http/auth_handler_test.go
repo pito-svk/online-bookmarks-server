@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/stretchr/testify/assert"
 	_authHttpDelivery "peterparada.com/online-bookmarks/auth/delivery/http"
 	"peterparada.com/online-bookmarks/domain/mocks"
@@ -16,6 +17,7 @@ func TestRegister(t *testing.T) {
 	mockUserRepo := new(mocks.UserRepository)
 	mockUsecase := mocks.NewAuthUsecase(mockUserRepo)
 	mockLogger := mocks.NewLogger()
+	jwtSecret := "SECRET"
 
 	t.Run("success", func(t *testing.T) {
 		w := httptest.NewRecorder()
@@ -37,6 +39,7 @@ func TestRegister(t *testing.T) {
 		handler := _authHttpDelivery.AuthHandler{
 			AuthUsecase: mockUsecase,
 			Logger:      mockLogger,
+			JwtSecret:   jwtSecret,
 		}
 
 		handler.RegisterUser(w, r)
@@ -51,6 +54,23 @@ func TestRegister(t *testing.T) {
 		assert.Equal(t, "random@example.com", jsonResponse["email"])
 		assert.Equal(t, "John", jsonResponse["firstName"])
 		assert.Equal(t, "Doe", jsonResponse["lastName"])
+
+		authToken := jsonResponse["authData"].(map[string]interface{})["token"].(string)
+
+		assert.NotEmpty(t, authToken)
+
+		token, err := jwt.Parse(authToken, func(token *jwt.Token) (interface{}, error) {
+			return []byte(jwtSecret), nil
+		})
+
+		assert.NoError(t, err)
+
+		claims, ok := token.Claims.(jwt.MapClaims)
+
+		assert.True(t, ok)
+		assert.NoError(t, claims.Valid())
+
+		assert.Equal(t, jsonResponse["id"], claims["id"])
 	})
 
 	t.Run("duplicate", func(t *testing.T) {

@@ -43,6 +43,7 @@ func main() {
 	}
 
 	logger := initLogger()
+	jwtSecret := os.Getenv("JWT_SECRET")
 
 	r := chi.NewRouter()
 
@@ -57,7 +58,7 @@ func main() {
 	userRepo := _userRepo.NewFileDBUserRepository(fileDB)
 
 	authUsecase := _authUsecase.NewAuthUsecase(userRepo)
-	_authHttpDelivery.NewAuthHandler(r, authUsecase, logger)
+	_authHttpDelivery.NewAuthHandler(r, authUsecase, logger, jwtSecret)
 
 	server := &http.Server{Addr: port, Handler: r}
 
