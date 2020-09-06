@@ -23,4 +23,5 @@ func (p *PingHandler) GetPing(w http.ResponseWriter, r *http.Request) {
 	pingResponse := p.PingUsecase.Get()
 
 	w.Write([]byte(pingResponse))
+	return
 }
