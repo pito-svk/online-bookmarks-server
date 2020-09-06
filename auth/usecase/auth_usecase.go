@@ -28,7 +28,7 @@ func (authU *authUsecase) RegisterUser(u *entity.User) (*entity.User, error) {
 		return nil, err
 	}
 
-	user.Password = ""
+	user.ClearPassword()
 
 	return user, nil
 }

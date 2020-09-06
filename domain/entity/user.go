@@ -13,21 +13,6 @@ type User struct {
 	LastName  string
 }
 
-func (user *User) SetID() {
-	user.ID = GenerateID()
-}
-
-func (user *User) SetHashedPassword(password string) error {
-	hashedPassword, err := HashPassword(password)
-	if err != nil {
-		return err
-	}
-
-	user.Password = hashedPassword
-
-	return nil
-}
-
 func GenerateHexID() string {
 	return primitive.NewObjectID().Hex()
 }
@@ -43,4 +28,23 @@ func HashPassword(password string) (string, error) {
 	}
 
 	return string(hashedPassword), nil
+}
+
+func (user *User) SetID() {
+	user.ID = GenerateID()
+}
+
+func (user *User) SetHashedPassword(password string) error {
+	hashedPassword, err := HashPassword(password)
+	if err != nil {
+		return err
+	}
+
+	user.Password = hashedPassword
+
+	return nil
+}
+
+func (user *User) ClearPassword() {
+	user.Password = ""
 }
