@@ -3,7 +3,6 @@ package mocks
 import (
 	"errors"
 
-	"github.com/google/uuid"
 	"peterparada.com/online-bookmarks/domain/entity"
 )
 
@@ -18,14 +17,11 @@ func (repo *UserRepository) Store(user *entity.User) (*entity.User, error) {
 		}
 	}
 
-	user.ID = uuid.New().String()
-
-	hashedPassword, err := entity.HashPassword(user.Password)
+	user.SetID()
+	err := user.SetHashedPassword(user.Password)
 	if err != nil {
 		return nil, err
 	}
-
-	user.Password = hashedPassword
 
 	repo.users = append(repo.users, user)
 

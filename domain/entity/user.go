@@ -21,7 +21,7 @@ func GenerateID() string {
 	return GenerateHexID()
 }
 
-func HashPassword(password string) (string, error) {
+func hashPassword(password string) (string, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return "", err
@@ -35,7 +35,7 @@ func (user *User) SetID() {
 }
 
 func (user *User) SetHashedPassword(password string) error {
-	hashedPassword, err := HashPassword(password)
+	hashedPassword, err := hashPassword(password)
 	if err != nil {
 		return err
 	}
