@@ -13,12 +13,12 @@ type User struct {
 	LastName  string
 }
 
-func GenerateHexID() string {
+func generateHexID() string {
 	return primitive.NewObjectID().Hex()
 }
 
-func GenerateID() string {
-	return GenerateHexID()
+func generateID() string {
+	return generateHexID()
 }
 
 func hashPassword(password string) (string, error) {
@@ -31,7 +31,7 @@ func hashPassword(password string) (string, error) {
 }
 
 func (user *User) SetID() {
-	user.ID = GenerateID()
+	user.ID = generateID()
 }
 
 func (user *User) SetHashedPassword() error {
