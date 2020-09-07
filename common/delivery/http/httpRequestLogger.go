@@ -47,7 +47,7 @@ func HttpRequestLoggerMiddleware(logger domain.Logger) func(next http.Handler) h
 			httpMetrics := httpsnoop.CaptureMetrics(next, w, r)
 
 			responseCode := httpMetrics.Code
-			responseDuration := httpMetrics.Duration.Microseconds()
+			responseDuration := httpMetrics.Duration.Milliseconds()
 
 			requestData := map[string]interface{}{
 				"uri":       uri,
@@ -60,8 +60,6 @@ func HttpRequestLoggerMiddleware(logger domain.Logger) func(next http.Handler) h
 			}
 
 			logger.Trace(requestData, "HTTP request")
-
-			next.ServeHTTP(w, r)
 		}
 
 		return http.HandlerFunc(handlerFn)
