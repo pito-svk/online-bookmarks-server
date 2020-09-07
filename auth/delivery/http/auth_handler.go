@@ -9,18 +9,17 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-playground/validator/v10"
-	"github.com/sirupsen/logrus"
 	"peterparada.com/online-bookmarks/domain"
 	"peterparada.com/online-bookmarks/domain/entity"
 )
 
 type AuthHandler struct {
 	AuthUsecase domain.AuthUsecase
-	Logger      *logrus.Logger
+	Logger      domain.Logger
 	JwtSecret   string
 }
 
-func NewAuthHandler(router *chi.Mux, usecase domain.AuthUsecase, logger *logrus.Logger, jwtSecret string) {
+func NewAuthHandler(router *chi.Mux, usecase domain.AuthUsecase, logger domain.Logger, jwtSecret string) {
 	handler := &AuthHandler{
 		AuthUsecase: usecase,
 		Logger:      logger,
