@@ -12,6 +12,13 @@ import (
 	"peterparada.com/online-bookmarks/domain/mocks"
 )
 
+func TestLowercaseFirstLetter(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		assert.Equal(t, lowercaseFirstLetter("Email"), "email")
+		assert.Equal(t, lowercaseFirstLetter("FirstName"), "firstName")
+	})
+}
+
 func TestRegister(t *testing.T) {
 	mockUserRepo := new(mocks.UserRepository)
 	mockUsecase := mocks.NewAuthUsecase(mockUserRepo)
