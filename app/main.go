@@ -11,6 +11,7 @@ import (
 	"github.com/sirupsen/logrus"
 	_authHttpDelivery "peterparada.com/online-bookmarks/auth/delivery/http"
 	_authUsecase "peterparada.com/online-bookmarks/auth/usecase"
+	"peterparada.com/online-bookmarks/domain"
 	_pingHttpDelivery "peterparada.com/online-bookmarks/ping/delivery/http"
 	_pingUsecase "peterparada.com/online-bookmarks/ping/usecase"
 	_userRepo "peterparada.com/online-bookmarks/user/repository/filedb"
@@ -23,14 +24,14 @@ func loadConfig() {
 	}
 }
 
-func initLogger() *logrus.Logger {
+func initLogger() domain.Logger {
 	logger := logrus.New()
 
 	logger.SetFormatter(&logrus.JSONFormatter{})
 	logger.SetOutput(os.Stdout)
 	logger.SetLevel(logrus.InfoLevel)
 
-	return logger
+	return domain.Logger(logger)
 }
 
 func getPort() string {
