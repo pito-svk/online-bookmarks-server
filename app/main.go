@@ -11,6 +11,7 @@ import (
 	"github.com/sirupsen/logrus"
 	_authHttpDelivery "peterparada.com/online-bookmarks/auth/delivery/http"
 	_authUsecase "peterparada.com/online-bookmarks/auth/usecase"
+	_httpRequestLogger "peterparada.com/online-bookmarks/common/delivery/http"
 	"peterparada.com/online-bookmarks/domain"
 	_pingHttpDelivery "peterparada.com/online-bookmarks/ping/delivery/http"
 	_pingUsecase "peterparada.com/online-bookmarks/ping/usecase"
@@ -24,14 +25,28 @@ func loadConfig() {
 	}
 }
 
+type LoggerImpl struct {
+	*logrus.Logger
+}
+
+// TODO: Move to separate module outside of main similar to mysql package in examples
+func (logger *LoggerImpl) Trace(v ...interface{}) {
+	vMap := v[0].(map[string]interface{})
+	entry := logger.WithFields(logrus.Fields(vMap))
+
+	entry.Log(logrus.TraceLevel, "HTTP request")
+}
+
 func initLogger() domain.Logger {
 	logger := logrus.New()
 
 	logger.SetFormatter(&logrus.JSONFormatter{})
 	logger.SetOutput(os.Stdout)
-	logger.SetLevel(logrus.InfoLevel)
+	logger.SetLevel(logrus.TraceLevel)
 
-	return domain.Logger(logger)
+	loggerImpl := LoggerImpl{Logger: logger}
+
+	return domain.Logger(&loggerImpl)
 }
 
 func getPort() string {
@@ -47,13 +62,19 @@ func getPort() string {
 func main() {
 	loadConfig()
 
+	logger := initLogger()
+	jwtSecret := os.Getenv("JWT_SECRET")
+
 	r := chi.NewRouter()
+
+	httpRequestLoggerMiddleware := _httpRequestLogger.HttpRequestLoggerMiddleware(logger)
+
+	r.Use(httpRequestLoggerMiddleware)
+
 	fileDB, err := scribble.New(".", nil)
 	if err != nil {
 		log.Fatal("Error loding file database")
 	}
-	logger := initLogger()
-	jwtSecret := os.Getenv("JWT_SECRET")
 
 	userRepo := _userRepo.NewFileDBUserRepository(fileDB)
 
