@@ -72,6 +72,7 @@ func lowercaseFirstLetter(s string) string {
 
 	str.WriteString(strings.ToLower(string(s[0])))
 	str.WriteString(string(s[1:]))
+
 	return str.String()
 }
 
