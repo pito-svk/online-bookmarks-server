@@ -67,6 +67,14 @@ func parseUserDataFromRequestBody(r *http.Request) (*userDataInput, error) {
 	return &userData, nil
 }
 
+func lowercaseFirstLetter(s string) string {
+	var str strings.Builder
+
+	str.WriteString(strings.ToLower(string(s[0])))
+	str.WriteString(string(s[1:]))
+	return str.String()
+}
+
 func validateCreateUserInput(userData *userDataInput) error {
 	v := validator.New()
 
@@ -77,8 +85,7 @@ func validateCreateUserInput(userData *userDataInput) error {
 
 		for _, err := range validationErrors {
 			if err.Tag() == "required" {
-				err.StructField()
-				return fmt.Errorf("Missing %s%s", strings.ToLower(string(err.Field()[0])), err.Field()[1:])
+				return fmt.Errorf("Missing %s", lowercaseFirstLetter(err.Field()))
 			}
 
 			if err.Tag() == "email" {
