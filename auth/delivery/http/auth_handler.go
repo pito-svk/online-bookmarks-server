@@ -70,8 +70,11 @@ func parseUserDataFromRequestBody(r *http.Request) (*userDataInput, error) {
 func lowercaseFirstLetter(s string) string {
 	var str strings.Builder
 
-	str.WriteString(strings.ToLower(string(s[0])))
-	str.WriteString(string(s[1:]))
+	firstLetter := string(s[0])
+	restLetters := string(s[1:])
+
+	str.WriteString(strings.ToLower(firstLetter))
+	str.WriteString(restLetters)
 
 	return str.String()
 }
