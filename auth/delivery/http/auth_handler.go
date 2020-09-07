@@ -173,7 +173,10 @@ func (authH *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		if err.Error() == "User already exists" {
 			deliverConflictHttpError(w, err)
 		} else {
-			authH.Logger.Error(err)
+			authH.Logger.Error(map[string]interface{}{
+				"method":  "auth_handler/RegisterUser",
+				"pointer": "internal_server_error",
+			}, err)
 			deliverInternalServerErrorHttpError(w)
 		}
 		return
