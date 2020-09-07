@@ -30,11 +30,17 @@ type LoggerImpl struct {
 }
 
 // TODO: Move to separate module outside of main similar to mysql package in examples
-func (logger *LoggerImpl) Trace(v ...interface{}) {
-	vMap := v[0].(map[string]interface{})
-	entry := logger.WithFields(logrus.Fields(vMap))
+func (logger *LoggerImpl) Trace(args ...interface{}) {
+	if len(args) > 0 {
+		if mapData, ok := args[0].(map[string]interface{}); ok {
+			entry := logger.WithFields(logrus.Fields(mapData))
 
-	entry.Log(logrus.TraceLevel, "HTTP request")
+			entry.Log(logrus.TraceLevel, args[1:]...)
+			return
+		}
+	}
+
+	logger.Log(logrus.TraceLevel, args)
 }
 
 func initLogger() domain.Logger {
