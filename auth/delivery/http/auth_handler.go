@@ -154,7 +154,10 @@ func (authH *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 
 	userData, err := parseUserDataFromRequestBody(r)
 	if err != nil {
-		authH.Logger.Error(err)
+		authH.Logger.Error(map[string]interface{}{
+			"method":  "auth_handler/RegisterUser",
+			"pointer": "error_parsing_json",
+		}, err)
 		deliverErrorParsingJSONBodyHttpError(w)
 		return
 	}
