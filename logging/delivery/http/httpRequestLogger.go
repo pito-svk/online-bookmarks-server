@@ -40,7 +40,7 @@ type httpRequestData struct {
 	HTTPMethod      string
 	Referer         string
 	UserAgent       string
-	ip              string
+	IP              string
 	ResponseCode    int
 	RequestDuration int
 }
@@ -60,7 +60,7 @@ func getHttpRequestData(r *http.Request, httpMetrics httpsnoop.Metrics) httpRequ
 		HTTPMethod:      httpMethod,
 		Referer:         referer,
 		UserAgent:       userAgent,
-		ip:              ip,
+		IP:              ip,
 		ResponseCode:    responseCode,
 		RequestDuration: responseDuration,
 	}
@@ -77,7 +77,7 @@ func HttpRequestLoggerMiddleware(logger domain.Logger) func(next http.Handler) h
 				"method":    httpRequestData.HTTPMethod,
 				"referer":   httpRequestData.Referer,
 				"userAgent": httpRequestData.UserAgent,
-				"ip":        httpRequestData.ip,
+				"ip":        httpRequestData.IP,
 				"code":      string(httpRequestData.ResponseCode),
 				"duration":  string(httpRequestData.RequestDuration),
 			}
