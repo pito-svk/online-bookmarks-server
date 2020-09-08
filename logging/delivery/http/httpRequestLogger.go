@@ -105,6 +105,7 @@ func getHttpRequestData(r *http.Request, httpMetrics httpsnoop.Metrics) httpRequ
 	}
 }
 
+// TODO: Test middleware also
 func HttpRequestLoggerMiddleware(logger domain.Logger) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		handlerFn := func(w http.ResponseWriter, r *http.Request) {
