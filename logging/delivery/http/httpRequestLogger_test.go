@@ -10,6 +10,26 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestGetIpAddress(t *testing.T) {
+	t.Run("success with x-forwarded-for", func(t *testing.T) {
+		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(""))
+		r.Header.Set("X-Forwarded-For", "217.73.23.164")
+
+		ipAddress := getIpAddress(r)
+
+		assert.Equal(t, "217.73.23.164", ipAddress)
+	})
+
+	t.Run("success with x-real-ip", func(t *testing.T) {
+		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(""))
+		r.Header.Set("X-Real-Ip", "217.73.23.164")
+
+		ipAddress := getIpAddress(r)
+
+		assert.Equal(t, "217.73.23.164", ipAddress)
+	})
+}
+
 func TestGetHttpRequestData(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 

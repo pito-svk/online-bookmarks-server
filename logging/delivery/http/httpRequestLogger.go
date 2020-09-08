@@ -16,7 +16,7 @@ func ipAddrFromRemoteAddr(s string) string {
 	return s[:idx]
 }
 
-func requestGetRemoteAddress(r *http.Request) string {
+func getIpAddress(r *http.Request) string {
 	hdr := r.Header
 	hdrRealIP := hdr.Get("X-Real-Ip")
 	hdrForwardedFor := hdr.Get("X-Forwarded-For")
@@ -50,7 +50,7 @@ func getHttpRequestData(r *http.Request, httpMetrics httpsnoop.Metrics) httpRequ
 	httpMethod := r.Method
 	referer := r.Header.Get("Referer")
 	userAgent := r.Header.Get("User-Agent")
-	ip := requestGetRemoteAddress(r)
+	ip := getIpAddress(r)
 
 	responseCode := httpMetrics.Code
 	responseDuration := int(httpMetrics.Duration.Milliseconds())
