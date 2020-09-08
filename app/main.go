@@ -11,8 +11,8 @@ import (
 	"github.com/sirupsen/logrus"
 	_authHttpDelivery "peterparada.com/online-bookmarks/auth/delivery/http"
 	_authUsecase "peterparada.com/online-bookmarks/auth/usecase"
-	_httpRequestLogger "peterparada.com/online-bookmarks/logging/delivery/http"
 	"peterparada.com/online-bookmarks/domain"
+	_httpRequestLogger "peterparada.com/online-bookmarks/logging/delivery/http"
 	"peterparada.com/online-bookmarks/logging/repository"
 	_pingHttpDelivery "peterparada.com/online-bookmarks/ping/delivery/http"
 	_pingUsecase "peterparada.com/online-bookmarks/ping/usecase"
@@ -25,8 +25,6 @@ func loadConfig() {
 		log.Fatal("Error loading .env file")
 	}
 }
-
-
 
 func initLogger() domain.Logger {
 	logger := logrus.New()

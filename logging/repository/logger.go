@@ -6,12 +6,17 @@ type LoggerImpl struct {
 	*logrus.Logger
 }
 
+func (logger *LoggerImpl) LogJSONMap(data map[string]interface{}, logLevel logrus.Level, args ...interface{}) {
+	fields := logrus.Fields(logrus.Fields(data))
+	entry := logger.WithFields(fields)
+
+	entry.Log(logLevel, fields, args)
+}
+
 func (logger *LoggerImpl) Trace(args ...interface{}) {
 	if len(args) > 0 {
 		if mapData, ok := args[0].(map[string]interface{}); ok {
-			entry := logger.WithFields(logrus.Fields(mapData))
-
-			entry.Log(logrus.TraceLevel, args[1:]...)
+			logger.LogJSONMap(mapData, logrus.TraceLevel, args[1:]...)
 			return
 		}
 	}
@@ -22,9 +27,7 @@ func (logger *LoggerImpl) Trace(args ...interface{}) {
 func (logger *LoggerImpl) Info(args ...interface{}) {
 	if len(args) > 0 {
 		if mapData, ok := args[0].(map[string]interface{}); ok {
-			entry := logger.WithFields(logrus.Fields(mapData))
-
-			entry.Log(logrus.InfoLevel, args[1:]...)
+			logger.LogJSONMap(mapData, logrus.InfoLevel, args[1:]...)
 			return
 		}
 	}
@@ -35,9 +38,7 @@ func (logger *LoggerImpl) Info(args ...interface{}) {
 func (logger *LoggerImpl) Warn(args ...interface{}) {
 	if len(args) > 0 {
 		if mapData, ok := args[0].(map[string]interface{}); ok {
-			entry := logger.WithFields(logrus.Fields(mapData))
-
-			entry.Log(logrus.WarnLevel, args[1:]...)
+			logger.LogJSONMap(mapData, logrus.WarnLevel, args[1:]...)
 			return
 		}
 	}
@@ -48,9 +49,7 @@ func (logger *LoggerImpl) Warn(args ...interface{}) {
 func (logger *LoggerImpl) Error(args ...interface{}) {
 	if len(args) > 0 {
 		if mapData, ok := args[0].(map[string]interface{}); ok {
-			entry := logger.WithFields(logrus.Fields(mapData))
-
-			entry.Log(logrus.ErrorLevel, args[1:]...)
+			logger.LogJSONMap(mapData, logrus.ErrorLevel, args[1:]...)
 			return
 		}
 	}

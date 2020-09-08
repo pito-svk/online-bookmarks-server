@@ -43,7 +43,7 @@ func HttpRequestLoggerMiddleware(logger domain.Logger) func(next http.Handler) h
 			referer := r.Header.Get("Referer")
 			userAgent := r.Header.Get("User-Agent")
 			// Add request size also here
-// and test first !!!!!
+			// and test first !!!!!
 			ip := requestGetRemoteAddress(r)
 
 			httpMetrics := httpsnoop.CaptureMetrics(next, w, r)
