@@ -149,15 +149,26 @@ func composeUserCreatedResponse(user *entity.User, authToken string) userCreated
 	}
 }
 
+func logErrorParsingJsonError(logger domain.Logger, err error) {
+	logger.Error(map[string]interface{}{
+		"method":  "auth_handler/RegisterUser",
+		"pointer": "error_parsing_json",
+	}, err)
+}
+
+func logInternalServerError(logger domain.Logger, err error) {
+	logger.Error(map[string]interface{}{
+		"method":  "auth_handler/RegisterUser",
+		"pointer": "internal_server_error",
+	}, err)
+}
+
 func (authH *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	setJSONContentTypeInResponse(w)
 
 	userData, err := parseUserDataFromRequestBody(r)
 	if err != nil {
-		authH.Logger.Error(map[string]interface{}{
-			"method":  "auth_handler/RegisterUser",
-			"pointer": "error_parsing_json",
-		}, err)
+		logErrorParsingJsonError(authH.Logger, err)
 		deliverErrorParsingJSONBodyHttpError(w)
 		return
 	}
@@ -173,10 +184,7 @@ func (authH *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		if err.Error() == "User already exists" {
 			deliverConflictHttpError(w, err)
 		} else {
-			authH.Logger.Error(map[string]interface{}{
-				"method":  "auth_handler/RegisterUser",
-				"pointer": "internal_server_error",
-			}, err)
+			logInternalServerError(authH.Logger, err)
 			deliverInternalServerErrorHttpError(w)
 		}
 		return
