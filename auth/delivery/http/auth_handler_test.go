@@ -19,6 +19,34 @@ func TestLowercaseFirstLetter(t *testing.T) {
 	})
 }
 
+func TestValidateCreateUserInput(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		userData := userDataInput{
+			Email:     "random@example.com",
+			Password:  "demouser",
+			FirstName: "John",
+			LastName:  "Doe",
+		}
+
+		err := validateCreateUserInput(&userData)
+
+		assert.NoError(t, err)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		userData := userDataInput{
+			Email:     "invalidEmail.com",
+			Password:  "demouser",
+			FirstName: "John",
+			LastName:  "Doe",
+		}
+
+		err := validateCreateUserInput(&userData)
+
+		assert.Error(t, err)
+	})
+}
+
 func TestRegister(t *testing.T) {
 	mockUserRepo := new(mocks.UserRepository)
 	mockUsecase := mocks.NewAuthUsecase(mockUserRepo)
