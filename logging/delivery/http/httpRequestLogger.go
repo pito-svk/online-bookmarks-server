@@ -50,12 +50,13 @@ func ipAddrFromRemoteAddr(s string) string {
 }
 
 func getIpAddress(r *http.Request) string {
-	hdr := r.Header
-	hdrRealIP := hdr.Get("X-Real-Ip")
-	hdrForwardedFor := hdr.Get("X-Forwarded-For")
+	hdrRealIP := r.Header.Get("X-Real-Ip")
+	hdrForwardedFor := r.Header.Get("X-Forwarded-For")
+
 	if hdrRealIP == "" && hdrForwardedFor == "" {
 		return ipAddrFromRemoteAddr(r.RemoteAddr)
 	}
+
 	if hdrForwardedFor != "" {
 		var publicParts []string
 
