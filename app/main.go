@@ -11,8 +11,9 @@ import (
 	"github.com/sirupsen/logrus"
 	_authHttpDelivery "peterparada.com/online-bookmarks/auth/delivery/http"
 	_authUsecase "peterparada.com/online-bookmarks/auth/usecase"
-	_httpRequestLogger "peterparada.com/online-bookmarks/common/delivery/http"
+	_httpRequestLogger "peterparada.com/online-bookmarks/logging/delivery/http"
 	"peterparada.com/online-bookmarks/domain"
+	"peterparada.com/online-bookmarks/logging/repository"
 	_pingHttpDelivery "peterparada.com/online-bookmarks/ping/delivery/http"
 	_pingUsecase "peterparada.com/online-bookmarks/ping/usecase"
 	_userRepo "peterparada.com/online-bookmarks/user/repository/filedb"
@@ -25,62 +26,7 @@ func loadConfig() {
 	}
 }
 
-type LoggerImpl struct {
-	*logrus.Logger
-}
 
-// TODO: Move to separate module outside of main similar to mysql package in examples
-func (logger *LoggerImpl) Trace(args ...interface{}) {
-	if len(args) > 0 {
-		if mapData, ok := args[0].(map[string]interface{}); ok {
-			entry := logger.WithFields(logrus.Fields(mapData))
-
-			entry.Log(logrus.TraceLevel, args[1:]...)
-			return
-		}
-	}
-
-	logger.Log(logrus.TraceLevel, args...)
-}
-
-func (logger *LoggerImpl) Info(args ...interface{}) {
-	if len(args) > 0 {
-		if mapData, ok := args[0].(map[string]interface{}); ok {
-			entry := logger.WithFields(logrus.Fields(mapData))
-
-			entry.Log(logrus.InfoLevel, args[1:]...)
-			return
-		}
-	}
-
-	logger.Log(logrus.InfoLevel, args...)
-}
-
-func (logger *LoggerImpl) Warn(args ...interface{}) {
-	if len(args) > 0 {
-		if mapData, ok := args[0].(map[string]interface{}); ok {
-			entry := logger.WithFields(logrus.Fields(mapData))
-
-			entry.Log(logrus.WarnLevel, args[1:]...)
-			return
-		}
-	}
-
-	logger.Log(logrus.WarnLevel, args...)
-}
-
-func (logger *LoggerImpl) Error(args ...interface{}) {
-	if len(args) > 0 {
-		if mapData, ok := args[0].(map[string]interface{}); ok {
-			entry := logger.WithFields(logrus.Fields(mapData))
-
-			entry.Log(logrus.ErrorLevel, args[1:]...)
-			return
-		}
-	}
-
-	logger.Log(logrus.ErrorLevel, args...)
-}
 
 func initLogger() domain.Logger {
 	logger := logrus.New()
@@ -89,7 +35,7 @@ func initLogger() domain.Logger {
 	logger.SetOutput(os.Stdout)
 	logger.SetLevel(logrus.TraceLevel)
 
-	loggerImpl := LoggerImpl{Logger: logger}
+	loggerImpl := repository.LoggerImpl{Logger: logger}
 
 	return domain.Logger(&loggerImpl)
 }
