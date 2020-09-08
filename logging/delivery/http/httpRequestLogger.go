@@ -57,7 +57,6 @@ func getIpAddress(r *http.Request) string {
 		return ipAddrFromRemoteAddr(r.RemoteAddr)
 	}
 	if hdrForwardedFor != "" {
-		// X-Forwarded-For is potentially a list of addresses separated with ","
 		var publicParts []string
 
 		parts := strings.Split(hdrForwardedFor, ",")
