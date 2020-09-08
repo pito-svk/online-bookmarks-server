@@ -28,6 +28,15 @@ func TestGetIpAddress(t *testing.T) {
 
 		assert.Equal(t, "217.73.23.164", ipAddress)
 	})
+
+	t.Run("success with remoteAddr", func(t *testing.T) {
+		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(""))
+		r.RemoteAddr = "217.73.23.164"
+
+		ipAddress := getIpAddress(r)
+
+		assert.Equal(t, "217.73.23.164", ipAddress)
+	})
 }
 
 func TestGetHttpRequestData(t *testing.T) {
