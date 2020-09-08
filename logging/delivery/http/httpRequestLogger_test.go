@@ -82,12 +82,12 @@ func TestIsPrivateIpAddress(t *testing.T) {
 	})
 }
 
-func TestGetIpAddress(t *testing.T) {
+func TestGetIpAddressFromRequest(t *testing.T) {
 	t.Run("success with x-forwarded-for", func(t *testing.T) {
 		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(""))
 		r.Header.Set("X-Forwarded-For", "192.168.2.1,217.73.23.164")
 
-		ipAddress := getIpAddress(r)
+		ipAddress := getIpAddressFromRequest(r)
 
 		assert.Equal(t, "217.73.23.164", ipAddress)
 	})
@@ -96,7 +96,7 @@ func TestGetIpAddress(t *testing.T) {
 		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(""))
 		r.Header.Set("X-Real-Ip", "217.73.23.164")
 
-		ipAddress := getIpAddress(r)
+		ipAddress := getIpAddressFromRequest(r)
 
 		assert.Equal(t, "217.73.23.164", ipAddress)
 	})
@@ -105,7 +105,7 @@ func TestGetIpAddress(t *testing.T) {
 		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(""))
 		r.RemoteAddr = "217.73.23.164"
 
-		ipAddress := getIpAddress(r)
+		ipAddress := getIpAddressFromRequest(r)
 
 		assert.Equal(t, "217.73.23.164", ipAddress)
 	})
