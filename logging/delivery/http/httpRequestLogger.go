@@ -1,12 +1,45 @@
 package http
 
 import (
+	"fmt"
+	"net"
 	"net/http"
 	"strings"
 
 	"github.com/felixge/httpsnoop"
 	"peterparada.com/online-bookmarks/domain"
 )
+
+func isPrivateIpAddress(ip string) (bool, error) {
+	ipNet, _, err := net.ParseCIDR(fmt.Sprintf("%s/32", ip))
+	if err != nil {
+		return false, err
+	}
+
+	_, cidr_192_168, err := net.ParseCIDR("192.168.0.0/16")
+	if err != nil {
+		return false, err
+	}
+
+	_, cidr_172_16, err := net.ParseCIDR("172.16.0.0/12")
+	if err != nil {
+		return false, err
+	}
+
+	_, cidr_10_0, err := net.ParseCIDR("10.0.0.0/8")
+	if err != nil {
+		return false, err
+	}
+
+	_, cidr_x, err := net.ParseCIDR("169.254.0.0/16")
+	if err != nil {
+		return false, err
+	}
+
+	isPrivateIp := ipNet.IsLoopback() || cidr_192_168.Contains(ipNet) || cidr_172_16.Contains(ipNet) || cidr_10_0.Contains(ipNet) || cidr_x.Contains(ipNet)
+
+	return isPrivateIp, nil
+}
 
 func ipAddrFromRemoteAddr(s string) string {
 	idx := strings.LastIndex(s, ":")
@@ -25,12 +58,18 @@ func getIpAddress(r *http.Request) string {
 	}
 	if hdrForwardedFor != "" {
 		// X-Forwarded-For is potentially a list of addresses separated with ","
+		var publicParts []string
+
 		parts := strings.Split(hdrForwardedFor, ",")
-		for i, p := range parts {
-			parts[i] = strings.TrimSpace(p)
+		for _, p := range parts {
+			privateIp, _ := isPrivateIpAddress(strings.TrimSpace(p))
+
+			if !privateIp {
+				publicParts = append(publicParts, strings.TrimSpace(p))
+			}
 		}
-		// TODO: should return first non-local address
-		return parts[0]
+
+		return publicParts[0]
 	}
 	return hdrRealIP
 }

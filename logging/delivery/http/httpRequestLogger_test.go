@@ -10,10 +10,82 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestIsPrivateIpAddress(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		isPrivateIp, err := isPrivateIpAddress("127.0.0.1")
+
+		assert.NoError(t, err)
+		assert.Equal(t, true, isPrivateIp)
+	})
+
+	t.Run("success 2", func(t *testing.T) {
+		isPrivateIp, err := isPrivateIpAddress("192.168.0.0")
+
+		assert.NoError(t, err)
+		assert.Equal(t, true, isPrivateIp)
+	})
+
+	t.Run("success 3", func(t *testing.T) {
+		isPrivateIp, err := isPrivateIpAddress("192.168.255.255")
+
+		assert.NoError(t, err)
+		assert.Equal(t, true, isPrivateIp)
+	})
+
+	t.Run("success 4", func(t *testing.T) {
+		isPrivateIp, err := isPrivateIpAddress("172.16.0.0")
+
+		assert.NoError(t, err)
+		assert.Equal(t, true, isPrivateIp)
+	})
+
+	t.Run("success 5", func(t *testing.T) {
+		isPrivateIp, err := isPrivateIpAddress("172.31.255.255")
+
+		assert.NoError(t, err)
+		assert.Equal(t, true, isPrivateIp)
+	})
+
+	t.Run("success 6", func(t *testing.T) {
+		isPrivateIp, err := isPrivateIpAddress("10.0.0.0")
+
+		assert.NoError(t, err)
+		assert.Equal(t, true, isPrivateIp)
+	})
+
+	t.Run("success 7", func(t *testing.T) {
+		isPrivateIp, err := isPrivateIpAddress("10.255.255.255")
+
+		assert.NoError(t, err)
+		assert.Equal(t, true, isPrivateIp)
+	})
+
+	t.Run("success 9 (public ip address)", func(t *testing.T) {
+		isPrivateIp, err := isPrivateIpAddress("217.73.23.164")
+
+		assert.NoError(t, err)
+		assert.Equal(t, false, isPrivateIp)
+	})
+
+	t.Run("success 10", func(t *testing.T) {
+		isPrivateIp, err := isPrivateIpAddress("127.0.0.0")
+
+		assert.NoError(t, err)
+		assert.Equal(t, true, isPrivateIp)
+	})
+
+	t.Run("success 11", func(t *testing.T) {
+		isPrivateIp, err := isPrivateIpAddress("169.254.0.0")
+
+		assert.NoError(t, err)
+		assert.Equal(t, true, isPrivateIp)
+	})
+}
+
 func TestGetIpAddress(t *testing.T) {
 	t.Run("success with x-forwarded-for", func(t *testing.T) {
 		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(""))
-		r.Header.Set("X-Forwarded-For", "217.73.23.164")
+		r.Header.Set("X-Forwarded-For", "192.168.2.1,217.73.23.164")
 
 		ipAddress := getIpAddress(r)
 
