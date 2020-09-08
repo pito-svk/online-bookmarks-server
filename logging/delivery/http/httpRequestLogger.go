@@ -85,23 +85,14 @@ type httpRequestData struct {
 }
 
 func getHttpRequestData(r *http.Request, httpMetrics httpsnoop.Metrics) httpRequestData {
-	uri := r.URL.String()
-	httpMethod := r.Method
-	referer := r.Header.Get("Referer")
-	userAgent := r.Header.Get("User-Agent")
-	ip := getIpAddressFromRequest(r)
-
-	responseCode := httpMetrics.Code
-	responseDuration := int(httpMetrics.Duration.Milliseconds())
-
 	return httpRequestData{
-		URI:             uri,
-		HTTPMethod:      httpMethod,
-		Referer:         referer,
-		UserAgent:       userAgent,
-		IP:              ip,
-		ResponseCode:    responseCode,
-		RequestDuration: responseDuration,
+		URI:             r.URL.String(),
+		HTTPMethod:      r.Method,
+		Referer:         r.Header.Get("Referer"),
+		UserAgent:       r.Header.Get("User-Agent"),
+		IP:              getIpAddressFromRequest(r),
+		ResponseCode:    httpMetrics.Code,
+		RequestDuration: int(httpMetrics.Duration.Milliseconds()),
 	}
 }
 
