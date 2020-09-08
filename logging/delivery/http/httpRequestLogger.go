@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/felixge/httpsnoop"
@@ -118,8 +117,8 @@ func HttpRequestLoggerMiddleware(logger domain.Logger) func(next http.Handler) h
 				"referer":   httpRequestData.Referer,
 				"userAgent": httpRequestData.UserAgent,
 				"ip":        httpRequestData.IP,
-				"code":      strconv.Itoa(httpRequestData.ResponseCode),
-				"duration":  strconv.Itoa(httpRequestData.RequestDuration),
+				"code":      httpRequestData.ResponseCode,
+				"duration":  httpRequestData.RequestDuration,
 			}
 
 			logger.Trace(requestData, "HTTP request")
