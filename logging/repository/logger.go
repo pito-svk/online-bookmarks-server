@@ -10,7 +10,7 @@ func (logger *LoggerImpl) LogJSONMap(data map[string]interface{}, logLevel logru
 	fields := logrus.Fields(logrus.Fields(data))
 	entry := logger.WithFields(fields)
 
-	entry.Log(logLevel, fields, args)
+	entry.Log(logLevel, args...)
 }
 
 func (logger *LoggerImpl) Trace(args ...interface{}) {
