@@ -35,30 +35,51 @@ func requestGetRemoteAddress(r *http.Request) string {
 	return hdrRealIP
 }
 
+type httpRequestData struct {
+	URI             string
+	HTTPMethod      string
+	Referer         string
+	UserAgent       string
+	ip              string
+	ResponseCode    int
+	RequestDuration int
+}
+
+func getHttpRequestData(r *http.Request, httpMetrics httpsnoop.Metrics) httpRequestData {
+	uri := r.URL.String()
+	httpMethod := r.Method
+	referer := r.Header.Get("Referer")
+	userAgent := r.Header.Get("User-Agent")
+	ip := requestGetRemoteAddress(r)
+
+	responseCode := httpMetrics.Code
+	responseDuration := int(httpMetrics.Duration.Milliseconds())
+
+	return httpRequestData{
+		URI:             uri,
+		HTTPMethod:      httpMethod,
+		Referer:         referer,
+		UserAgent:       userAgent,
+		ip:              ip,
+		ResponseCode:    responseCode,
+		RequestDuration: responseDuration,
+	}
+}
+
 func HttpRequestLoggerMiddleware(logger domain.Logger) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		handlerFn := func(w http.ResponseWriter, r *http.Request) {
-			uri := r.URL.String()
-			httpMethod := r.Method
-			referer := r.Header.Get("Referer")
-			userAgent := r.Header.Get("User-Agent")
-			// Add request size also here
-			// and test first !!!!!
-			ip := requestGetRemoteAddress(r)
-
 			httpMetrics := httpsnoop.CaptureMetrics(next, w, r)
-
-			responseCode := httpMetrics.Code
-			responseDuration := httpMetrics.Duration.Milliseconds()
+			httpRequestData := getHttpRequestData(r, httpMetrics)
 
 			requestData := map[string]interface{}{
-				"uri":       uri,
-				"method":    httpMethod,
-				"referer":   referer,
-				"userAgent": userAgent,
-				"ip":        ip,
-				"code":      responseCode,
-				"duration":  responseDuration,
+				"uri":       httpRequestData.URI,
+				"method":    httpRequestData.HTTPMethod,
+				"referer":   httpRequestData.Referer,
+				"userAgent": httpRequestData.UserAgent,
+				"ip":        httpRequestData.ip,
+				"code":      string(httpRequestData.ResponseCode),
+				"duration":  string(httpRequestData.RequestDuration),
 			}
 
 			logger.Trace(requestData, "HTTP request")
