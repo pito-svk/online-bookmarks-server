@@ -15,8 +15,8 @@ func (logger *LoggerImpl) LogJSONMap(data map[string]interface{}, logLevel logru
 
 func (logger *LoggerImpl) Trace(args ...interface{}) {
 	if len(args) > 0 {
-		if mapData, ok := args[0].(map[string]interface{}); ok {
-			logger.LogJSONMap(mapData, logrus.TraceLevel, args[1:]...)
+		if jsonMap, ok := args[0].(map[string]interface{}); ok {
+			logger.LogJSONMap(jsonMap, logrus.TraceLevel, args[1:]...)
 			return
 		}
 	}
@@ -26,8 +26,8 @@ func (logger *LoggerImpl) Trace(args ...interface{}) {
 
 func (logger *LoggerImpl) Info(args ...interface{}) {
 	if len(args) > 0 {
-		if mapData, ok := args[0].(map[string]interface{}); ok {
-			logger.LogJSONMap(mapData, logrus.InfoLevel, args[1:]...)
+		if jsonMap, ok := args[0].(map[string]interface{}); ok {
+			logger.LogJSONMap(jsonMap, logrus.InfoLevel, args[1:]...)
 			return
 		}
 	}
@@ -37,8 +37,8 @@ func (logger *LoggerImpl) Info(args ...interface{}) {
 
 func (logger *LoggerImpl) Warn(args ...interface{}) {
 	if len(args) > 0 {
-		if mapData, ok := args[0].(map[string]interface{}); ok {
-			logger.LogJSONMap(mapData, logrus.WarnLevel, args[1:]...)
+		if jsonMap, ok := args[0].(map[string]interface{}); ok {
+			logger.LogJSONMap(jsonMap, logrus.WarnLevel, args[1:]...)
 			return
 		}
 	}
@@ -48,8 +48,8 @@ func (logger *LoggerImpl) Warn(args ...interface{}) {
 
 func (logger *LoggerImpl) Error(args ...interface{}) {
 	if len(args) > 0 {
-		if mapData, ok := args[0].(map[string]interface{}); ok {
-			logger.LogJSONMap(mapData, logrus.ErrorLevel, args[1:]...)
+		if jsonMap, ok := args[0].(map[string]interface{}); ok {
+			logger.LogJSONMap(jsonMap, logrus.ErrorLevel, args[1:]...)
 			return
 		}
 	}
