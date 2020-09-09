@@ -18,8 +18,8 @@ var privateCIDRs = []string{
 	"169.254.0.0/16",
 }
 
-func isPrivateIpAddress(ip string) (bool, error) {
-	ipAddress, _, err := net.ParseCIDR(fmt.Sprintf("%s/32", ip))
+func isPrivateIpAddress(ipAddress string) (bool, error) {
+	ip, _, err := net.ParseCIDR(fmt.Sprintf("%s/32", ipAddress))
 	if err != nil {
 		return false, err
 	}
@@ -30,7 +30,7 @@ func isPrivateIpAddress(ip string) (bool, error) {
 			return false, err
 		}
 
-		if privateNetwork.Contains(ipAddress) {
+		if privateNetwork.Contains(ip) {
 			return true, nil
 		}
 	}
