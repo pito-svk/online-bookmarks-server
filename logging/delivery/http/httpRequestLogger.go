@@ -16,29 +16,25 @@ func isPrivateIpAddress(ip string) (bool, error) {
 		return false, err
 	}
 
-	_, cidr_192_168, err := net.ParseCIDR("192.168.0.0/16")
-	if err != nil {
-		return false, err
+	cidrs := []string{
+		"192.168.0.0/16",
+		"172.16.0.0/12",
+		"10.0.0.0/8",
+		"169.254.0.0/16",
 	}
 
-	_, cidr_172_16, err := net.ParseCIDR("172.16.0.0/12")
-	if err != nil {
-		return false, err
+	for _, cidr := range cidrs {
+		_, ipBlock, err := net.ParseCIDR(cidr)
+		if err != nil {
+			return false, err
+		}
+
+		if ipBlock.Contains(ipNet) {
+			return true, nil
+		}
 	}
 
-	_, cidr_10_0, err := net.ParseCIDR("10.0.0.0/8")
-	if err != nil {
-		return false, err
-	}
-
-	_, cidr_x, err := net.ParseCIDR("169.254.0.0/16")
-	if err != nil {
-		return false, err
-	}
-
-	isPrivateIp := ipNet.IsLoopback() || cidr_192_168.Contains(ipNet) || cidr_172_16.Contains(ipNet) || cidr_10_0.Contains(ipNet) || cidr_x.Contains(ipNet)
-
-	return isPrivateIp, nil
+	return ipNet.IsLoopback(), nil
 }
 
 func ipAddrFromRemoteAddr(s string) string {
