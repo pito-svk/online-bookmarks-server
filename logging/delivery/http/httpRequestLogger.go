@@ -18,7 +18,7 @@ var privateCIDRs = []string{
 	"169.254.0.0/16",
 }
 
-func isPrivateIpAddress(ipAddress string) (bool, error) {
+func isPrivateIPAddress(ipAddress string) (bool, error) {
 	ip, _, err := net.ParseCIDR(fmt.Sprintf("%s/32", ipAddress))
 	if err != nil {
 		return false, err
@@ -46,7 +46,7 @@ func ipAddrFromRemoteAddr(s string) string {
 	return s[:idx]
 }
 
-func getIpAddressFromRequest(r *http.Request) string {
+func getIPAddressFromRequest(r *http.Request) string {
 	hdrRealIP := r.Header.Get("X-Real-Ip")
 	hdrForwardedFor := r.Header.Get("X-Forwarded-For")
 
@@ -59,9 +59,9 @@ func getIpAddressFromRequest(r *http.Request) string {
 
 		parts := strings.Split(hdrForwardedFor, ",")
 		for _, p := range parts {
-			privateIp, _ := isPrivateIpAddress(strings.TrimSpace(p))
+			privateIP, _ := isPrivateIPAddress(strings.TrimSpace(p))
 
-			if !privateIp {
+			if !privateIP {
 				publicParts = append(publicParts, strings.TrimSpace(p))
 			}
 		}
@@ -87,7 +87,7 @@ func getHttpRequestData(r *http.Request, httpMetrics httpsnoop.Metrics) httpRequ
 		HTTPMethod:      r.Method,
 		Referer:         r.Header.Get("Referer"),
 		UserAgent:       r.Header.Get("User-Agent"),
-		IP:              getIpAddressFromRequest(r),
+		IP:              getIPAddressFromRequest(r),
 		ResponseCode:    httpMetrics.Code,
 		RequestDuration: int(httpMetrics.Duration.Milliseconds()),
 	}
