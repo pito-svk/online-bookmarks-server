@@ -10,27 +10,27 @@ import (
 	"peterparada.com/online-bookmarks/domain"
 )
 
+var privateCIDRs = []string{
+	"127.0.0.0/8",
+	"192.168.0.0/16",
+	"172.16.0.0/12",
+	"10.0.0.0/8",
+	"169.254.0.0/16",
+}
+
 func isPrivateIpAddress(ip string) (bool, error) {
 	ipAddress, _, err := net.ParseCIDR(fmt.Sprintf("%s/32", ip))
 	if err != nil {
 		return false, err
 	}
 
-	privateNetworks := []string{
-		"127.0.0.0/8",
-		"192.168.0.0/16",
-		"172.16.0.0/12",
-		"10.0.0.0/8",
-		"169.254.0.0/16",
-	}
-
-	for _, privateNetwork := range privateNetworks {
-		_, privateIpRange, err := net.ParseCIDR(privateNetwork)
+	for _, privateCIDR := range privateCIDRs {
+		_, privateNetwork, err := net.ParseCIDR(privateCIDR)
 		if err != nil {
 			return false, err
 		}
 
-		if privateIpRange.Contains(ipAddress) {
+		if privateNetwork.Contains(ipAddress) {
 			return true, nil
 		}
 	}
