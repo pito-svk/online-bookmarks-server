@@ -1,7 +1,6 @@
 package http
 
 import (
-	"fmt"
 	"net"
 	"net/http"
 	"strings"
@@ -43,7 +42,7 @@ func ipAddrFromRemoteAddr(s string) string {
 	return s[:idx]
 }
 
-func getIPAddressFromRequest(r *http.Request) string {
+func getIPAddressFromHttpRequest(r *http.Request) string {
 	hdrRealIP := r.Header.Get("X-Real-Ip")
 	hdrForwardedFor := r.Header.Get("X-Forwarded-For")
 
@@ -84,7 +83,7 @@ func getHttpRequestData(r *http.Request, httpMetrics httpsnoop.Metrics) httpRequ
 		HTTPMethod:      r.Method,
 		Referer:         r.Header.Get("Referer"),
 		UserAgent:       r.Header.Get("User-Agent"),
-		IP:              getIPAddressFromRequest(r),
+		IP:              getIPAddressFromHttpRequest(r),
 		ResponseCode:    httpMetrics.Code,
 		RequestDuration: int(httpMetrics.Duration.Milliseconds()),
 	}
