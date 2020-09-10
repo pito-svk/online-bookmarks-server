@@ -105,6 +105,13 @@ func TestParseIPFromXForwardedForHeader(t *testing.T) {
 	})
 }
 
+func TestParseRemoteAddr(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		assert.Equal(t, "217.73.23.164", parseRemoteIPAddress("217.73.23.164"))
+		assert.Equal(t, "217.73.23.164", parseRemoteIPAddress("217.73.23.164:3000"))
+	})
+}
+
 func TestGetIpAddressFromHttpRequest(t *testing.T) {
 	t.Run("success with x-forwarded-for", func(t *testing.T) {
 		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(""))
