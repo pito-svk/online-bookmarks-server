@@ -19,10 +19,7 @@ var privateCIDRs = []string{
 }
 
 func isPrivateIPAddress(ipAddress string) (bool, error) {
-	ip, _, err := net.ParseCIDR(fmt.Sprintf("%s/32", ipAddress))
-	if err != nil {
-		return false, err
-	}
+	ip := net.ParseIP(ipAddress)
 
 	for _, privateCIDR := range privateCIDRs {
 		_, privateNetwork, err := net.ParseCIDR(privateCIDR)
