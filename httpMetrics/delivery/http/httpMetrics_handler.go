@@ -22,6 +22,10 @@ func NewHTTPMetricsHandler(router *chi.Mux, usecase domain.HTTPMetricsUsecase, l
 	router.Use(handler.LogHTTPMetrics)
 }
 
+func logHTTPMetrics(logger domain.Logger, httpMetrics map[string]interface{}) {
+	logger.Trace(httpMetrics, "HTTP request")
+}
+
 func (httpMetricsH *HTTPMetricsHandler) LogHTTPMetrics(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		requestMetrics, err := httpMetricsH.HTTPMetricsUsecase.GetHTTPRequestMetrics(r)
@@ -50,6 +54,6 @@ func (httpMetricsH *HTTPMetricsHandler) LogHTTPMetrics(next http.Handler) http.H
 			"duration":  responseMetrics.Duration,
 		}
 
-		httpMetricsH.Logger.Trace(httpMetrics, "HTTP request")
+		logHTTPMetrics(httpMetricsH.Logger, httpMetrics)
 	})
 }
