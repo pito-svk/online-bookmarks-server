@@ -1,12 +1,14 @@
 package usecase
 
 import (
+	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"peterparada.com/online-bookmarks/domain/entity"
+	"peterparada.com/online-bookmarks/domain/mocks"
 )
 
 func TestIsPrivateIpAddress(t *testing.T) {
@@ -218,11 +220,22 @@ func TestGetHTTPResponseMetrics(t *testing.T) {
 		u := NewHTTPMetricsUsecase()
 
 		_w := httptest.NewRecorder()
-		w := entity.NewResponseWriterWithStatusCode(_w)
+
+		r := httptest.NewRequest("POST", "/users/register", strings.NewReader(""))
+		w := entity.NewResponseWriterWithMetrics(_w)
+
+		httpHandler := mocks.HTTPHandlerSettingRequestDuration{
+			Handler:           http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}),
+			WriterWithMetrics: w,
+			Duration:          123,
+		}
+
+		httpHandler.ServeHTTP(_w, r)
 
 		responseMetrics := u.GetHTTPResponseMetrics(w)
 
 		assert.Equal(t, 200, responseMetrics.Code)
+		assert.Equal(t, 123, responseMetrics.Duration)
 	})
 
 	t.Run("success 2", func(t *testing.T) {
@@ -230,11 +243,21 @@ func TestGetHTTPResponseMetrics(t *testing.T) {
 
 		_w := httptest.NewRecorder()
 
-		w := entity.NewResponseWriterWithStatusCode(_w)
+		r := httptest.NewRequest("POST", "/users/register", strings.NewReader(""))
+		w := entity.NewResponseWriterWithMetrics(_w)
 		w.WriteHeader(404)
+
+		httpHandler := mocks.HTTPHandlerSettingRequestDuration{
+			Handler:           http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}),
+			WriterWithMetrics: w,
+			Duration:          60,
+		}
+
+		httpHandler.ServeHTTP(_w, r)
 
 		responseMetrics := u.GetHTTPResponseMetrics(w)
 
 		assert.Equal(t, 404, responseMetrics.Code)
+		assert.Equal(t, 60, responseMetrics.Duration)
 	})
 }

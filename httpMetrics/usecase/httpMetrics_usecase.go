@@ -31,9 +31,10 @@ func (httpMetricsU *httpMetricsUsecase) GetHTTPRequestMetrics(r *http.Request) (
 	}, nil
 }
 
-func (httpMetricsU *httpMetricsUsecase) GetHTTPResponseMetrics(w *entity.ResponseWriterWithStatusCode) *entity.HTTPResponseMetrics {
+func (httpMetricsU *httpMetricsUsecase) GetHTTPResponseMetrics(w *entity.ResponseWriterWithMetrics) *entity.HTTPResponseMetrics {
 	return &entity.HTTPResponseMetrics{
-		Code: w.StatusCode,
+		Code:     w.StatusCode,
+		Duration: w.Duration,
 	}
 }
 

@@ -8,5 +8,5 @@ import (
 
 type HTTPMetricsUsecase interface {
 	GetHTTPRequestMetrics(r *http.Request) (*entity.HTTPRequestMetrics, error)
-	GetHTTPResponseMetrics(w *entity.ResponseWriterWithStatusCode) *entity.HTTPResponseMetrics
+	GetHTTPResponseMetrics(w *entity.ResponseWriterWithMetrics) *entity.HTTPResponseMetrics
 }
