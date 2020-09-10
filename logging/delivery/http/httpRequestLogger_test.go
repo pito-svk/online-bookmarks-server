@@ -85,7 +85,7 @@ func TestIsPrivateIpAddress(t *testing.T) {
 func TestGetIpAddressFromHttpRequest(t *testing.T) {
 	t.Run("success with x-forwarded-for", func(t *testing.T) {
 		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(""))
-		r.Header.Set("X-Forwarded-For", "192.168.2.1,217.73.23.164")
+		r.Header.Set("X-Forwarded-For", "192.168.2.1 , 217.73.23.164")
 
 		ipAddress := getIPAddressFromHttpRequest(r)
 
