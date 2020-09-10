@@ -53,6 +53,10 @@ func parseIPFromXForwardedForHeader(xForwardedFor string) (string, error) {
 	return "", nil
 }
 
+func parseIPFromXRealIPHeader(xRealIP string) string {
+	return xRealIP
+}
+
 func parseRemoteIPAddress(ipAddress string) string {
 	ipAddressPortIndex := strings.LastIndex(ipAddress, ":")
 	ipAddressContainsPort := ipAddressPortIndex != -1
@@ -65,7 +69,7 @@ func parseRemoteIPAddress(ipAddress string) string {
 	return ipAddress
 }
 
-func getIPAddressFromHttpRequest(r *http.Request) (string, error) {
+func getIPAddressFromHTTPRequest(r *http.Request) (string, error) {
 	xForwardedFor := r.Header.Get("X-Forwarded-For")
 
 	if xForwardedFor != "" {
@@ -82,7 +86,8 @@ func getIPAddressFromHttpRequest(r *http.Request) (string, error) {
 	xRealIP := r.Header.Get("X-Real-Ip")
 
 	if xRealIP != "" {
-		return xRealIP, nil
+		ip := parseIPFromXRealIPHeader(xRealIP)
+		return ip, nil
 	}
 
 	return parseRemoteIPAddress(r.RemoteAddr), nil
@@ -99,7 +104,7 @@ type httpRequestData struct {
 }
 
 func getHttpRequestData(r *http.Request, httpMetrics httpsnoop.Metrics) (*httpRequestData, error) {
-	ip, err := getIPAddressFromHttpRequest(r)
+	ip, err := getIPAddressFromHTTPRequest(r)
 	if err != nil {
 		return nil, err
 	}

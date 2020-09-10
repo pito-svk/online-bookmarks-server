@@ -105,6 +105,14 @@ func TestParseIPFromXForwardedForHeader(t *testing.T) {
 	})
 }
 
+func TestParseIPFromXRealIPHeader(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		ipAddress := parseIPFromXRealIPHeader("217.73.23.164")
+
+		assert.Equal(t, "217.73.23.164", ipAddress)
+	})
+}
+
 func TestParseRemoteAddr(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		assert.Equal(t, "217.73.23.164", parseRemoteIPAddress("217.73.23.164"))
@@ -112,12 +120,12 @@ func TestParseRemoteAddr(t *testing.T) {
 	})
 }
 
-func TestGetIpAddressFromHttpRequest(t *testing.T) {
+func TestGetIpAddressFromHTTPRequest(t *testing.T) {
 	t.Run("success with x-forwarded-for", func(t *testing.T) {
 		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(""))
 		r.Header.Set("X-Forwarded-For", "192.168.2.1 , 217.73.23.164")
 
-		ipAddress, err := getIPAddressFromHttpRequest(r)
+		ipAddress, err := getIPAddressFromHTTPRequest(r)
 
 		assert.NoError(t, err)
 		assert.Equal(t, "217.73.23.164", ipAddress)
@@ -127,7 +135,7 @@ func TestGetIpAddressFromHttpRequest(t *testing.T) {
 		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(""))
 		r.Header.Set("X-Real-Ip", "217.73.23.164")
 
-		ipAddress, err := getIPAddressFromHttpRequest(r)
+		ipAddress, err := getIPAddressFromHTTPRequest(r)
 
 		assert.NoError(t, err)
 		assert.Equal(t, "217.73.23.164", ipAddress)
@@ -137,7 +145,7 @@ func TestGetIpAddressFromHttpRequest(t *testing.T) {
 		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(""))
 		r.RemoteAddr = "217.73.23.164"
 
-		ipAddress, err := getIPAddressFromHttpRequest(r)
+		ipAddress, err := getIPAddressFromHTTPRequest(r)
 
 		assert.NoError(t, err)
 		assert.Equal(t, "217.73.23.164", ipAddress)
@@ -147,7 +155,7 @@ func TestGetIpAddressFromHttpRequest(t *testing.T) {
 		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(""))
 		r.RemoteAddr = "217.73.23.164:3000"
 
-		ipAddress, err := getIPAddressFromHttpRequest(r)
+		ipAddress, err := getIPAddressFromHTTPRequest(r)
 
 		assert.NoError(t, err)
 		assert.Equal(t, "217.73.23.164", ipAddress)
