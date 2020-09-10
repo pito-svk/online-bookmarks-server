@@ -42,29 +42,46 @@ func ipAddrFromRemoteAddr(s string) string {
 	return s[:idx]
 }
 
-func getIPAddressFromHttpRequest(r *http.Request) string {
-	hdrRealIP := r.Header.Get("X-Real-Ip")
-	hdrForwardedFor := r.Header.Get("X-Forwarded-For")
+func parseIPFromXForwardedForHeader(xForwardedFor string) (string, error) {
+	xForwardedForIps := strings.Split(xForwardedFor, ",")
 
-	if hdrRealIP == "" && hdrForwardedFor == "" {
-		return ipAddrFromRemoteAddr(r.RemoteAddr)
-	}
+	for _, ip := range xForwardedForIps {
+		ipWithoutSpaces := strings.TrimSpace(ip)
 
-	if hdrForwardedFor != "" {
-		var publicParts []string
-
-		parts := strings.Split(hdrForwardedFor, ",")
-		for _, p := range parts {
-			privateIP, _ := isPrivateIPAddress(strings.TrimSpace(p))
-
-			if !privateIP {
-				publicParts = append(publicParts, strings.TrimSpace(p))
-			}
+		privateIP, err := isPrivateIPAddress(ipWithoutSpaces)
+		if err != nil {
+			return "", err
 		}
 
-		return publicParts[0]
+		if !privateIP {
+			return ipWithoutSpaces, nil
+		}
 	}
-	return hdrRealIP
+
+	return "", nil
+}
+
+func getIPAddressFromHttpRequest(r *http.Request) (string, error) {
+	xForwardedFor := r.Header.Get("X-Forwarded-For")
+
+	if xForwardedFor != "" {
+		ip, err := parseIPFromXForwardedForHeader(xForwardedFor)
+		if err != nil {
+			return "", err
+		}
+
+		if ip != "" {
+			return ip, nil
+		}
+	}
+
+	xRealIp := r.Header.Get("X-Real-Ip")
+
+	if xRealIp != "" {
+		return xRealIp, nil
+	}
+
+	return ipAddrFromRemoteAddr(r.RemoteAddr), nil
 }
 
 type httpRequestData struct {
@@ -77,16 +94,21 @@ type httpRequestData struct {
 	RequestDuration int
 }
 
-func getHttpRequestData(r *http.Request, httpMetrics httpsnoop.Metrics) httpRequestData {
-	return httpRequestData{
+func getHttpRequestData(r *http.Request, httpMetrics httpsnoop.Metrics) (*httpRequestData, error) {
+	ip, err := getIPAddressFromHttpRequest(r)
+	if err != nil {
+		return nil, err
+	}
+
+	return &httpRequestData{
 		URI:             r.URL.String(),
 		HTTPMethod:      r.Method,
 		Referer:         r.Header.Get("Referer"),
 		UserAgent:       r.Header.Get("User-Agent"),
-		IP:              getIPAddressFromHttpRequest(r),
+		IP:              ip,
 		ResponseCode:    httpMetrics.Code,
 		RequestDuration: int(httpMetrics.Duration.Milliseconds()),
-	}
+	}, nil
 }
 
 // TODO: Test middleware also
@@ -94,7 +116,10 @@ func HttpRequestLoggerMiddleware(logger domain.Logger) func(next http.Handler) h
 	return func(next http.Handler) http.Handler {
 		handlerFn := func(w http.ResponseWriter, r *http.Request) {
 			httpMetrics := httpsnoop.CaptureMetrics(next, w, r)
-			httpRequestData := getHttpRequestData(r, httpMetrics)
+			httpRequestData, err := getHttpRequestData(r, httpMetrics)
+			if err != nil {
+				// TODO: Implement - return internal server error probably
+			}
 
 			requestData := map[string]interface{}{
 				"uri":       httpRequestData.URI,

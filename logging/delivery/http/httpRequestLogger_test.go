@@ -82,13 +82,37 @@ func TestIsPrivateIpAddress(t *testing.T) {
 	})
 }
 
+func TestParseIPFromXForwardedForHeader(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		ipAddress, err := parseIPFromXForwardedForHeader("192.168.2.1 , 217.73.23.164")
+
+		assert.NoError(t, err)
+		assert.Equal(t, "217.73.23.164", ipAddress)
+	})
+
+	t.Run("success 2", func(t *testing.T) {
+		ipAddress, err := parseIPFromXForwardedForHeader("217.73.23.165")
+
+		assert.NoError(t, err)
+		assert.Equal(t, "217.73.23.165", ipAddress)
+	})
+
+	t.Run("empty", func(t *testing.T) {
+		ipAddress, err := parseIPFromXForwardedForHeader("192.168.2.1")
+
+		assert.NoError(t, err)
+		assert.Equal(t, "", ipAddress)
+	})
+}
+
 func TestGetIpAddressFromHttpRequest(t *testing.T) {
 	t.Run("success with x-forwarded-for", func(t *testing.T) {
 		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(""))
 		r.Header.Set("X-Forwarded-For", "192.168.2.1 , 217.73.23.164")
 
-		ipAddress := getIPAddressFromHttpRequest(r)
+		ipAddress, err := getIPAddressFromHttpRequest(r)
 
+		assert.NoError(t, err)
 		assert.Equal(t, "217.73.23.164", ipAddress)
 	})
 
@@ -96,8 +120,9 @@ func TestGetIpAddressFromHttpRequest(t *testing.T) {
 		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(""))
 		r.Header.Set("X-Real-Ip", "217.73.23.164")
 
-		ipAddress := getIPAddressFromHttpRequest(r)
+		ipAddress, err := getIPAddressFromHttpRequest(r)
 
+		assert.NoError(t, err)
 		assert.Equal(t, "217.73.23.164", ipAddress)
 	})
 
@@ -105,8 +130,9 @@ func TestGetIpAddressFromHttpRequest(t *testing.T) {
 		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(""))
 		r.RemoteAddr = "217.73.23.164"
 
-		ipAddress := getIPAddressFromHttpRequest(r)
+		ipAddress, err := getIPAddressFromHttpRequest(r)
 
+		assert.NoError(t, err)
 		assert.Equal(t, "217.73.23.164", ipAddress)
 	})
 }
@@ -124,8 +150,9 @@ func TestGetHttpRequestData(t *testing.T) {
 			Duration: time.Duration(233 * time.Millisecond),
 		}
 
-		httpRequestData := getHttpRequestData(r, httpResponseMetrics)
+		httpRequestData, err := getHttpRequestData(r, httpResponseMetrics)
 
+		assert.NoError(t, err)
 		assert.Equal(t, "/auth/register", httpRequestData.URI)
 		assert.Equal(t, "POST", httpRequestData.HTTPMethod)
 		assert.Equal(t, "https://www.example.com", httpRequestData.Referer)
