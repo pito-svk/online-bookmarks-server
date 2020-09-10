@@ -31,12 +31,15 @@ func (httpMetricsH *HTTPMetricsHandler) LogHTTPMetrics(next http.Handler) http.H
 
 		// usecase.logHttpRequestData(requestData)
 
-		wr := entity.NewResponseWriterWithMetrics(w)
+		writerWithMetrics := entity.NewResponseWriterWithMetrics(w)
 
-		next.ServeHTTP(wr, r)
+		handlerSettingRequestDuration := entity.HTTPHandlerSettingRequestDuration{
+			Handler: next,
+		}
 
-		responseMetrics := httpMetricsH.HTTPMetricsUsecase.GetHTTPResponseMetrics(wr)
+		handlerSettingRequestDuration.ServeHTTP(writerWithMetrics, r)
 
+		responseMetrics := httpMetricsH.HTTPMetricsUsecase.GetHTTPResponseMetrics(writerWithMetrics)
 		httpMetrics := map[string]interface{}{
 			"uri":       requestMetrics.URI,
 			"method":    requestMetrics.Method,

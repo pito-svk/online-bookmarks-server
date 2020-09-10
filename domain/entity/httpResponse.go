@@ -30,8 +30,9 @@ type HTTPHandlerSettingRequestDuration struct {
 	http.Handler
 }
 
-func (h *HTTPHandlerSettingRequestDuration) ServeHTTP(w ResponseWriterWithMetrics, r *http.Request) {
-	// TODO: Define method for it
+func (h *HTTPHandlerSettingRequestDuration) ServeHTTP(w *ResponseWriterWithMetrics, r *http.Request) {
+	h.Handler.ServeHTTP(w, r)
+
+	// TODO: Define a method for it
 	w.Duration = int(time.Now().Sub(w.requestTimeStart).Milliseconds())
-	h.Handler.ServeHTTP(w.ResponseWriter, r)
 }
