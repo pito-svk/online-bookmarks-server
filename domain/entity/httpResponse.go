@@ -33,6 +33,12 @@ type HTTPHandlerSettingRequestDuration struct {
 func (h *HTTPHandlerSettingRequestDuration) ServeHTTP(w *ResponseWriterWithMetrics, r *http.Request) {
 	h.Handler.ServeHTTP(w, r)
 
+	duration := int(time.Now().Sub(w.requestTimeStart).Milliseconds())
+
+	if duration == 0 {
+		duration = 1
+	}
+
 	// TODO: Define a method for it
-	w.Duration = int(time.Now().Sub(w.requestTimeStart).Milliseconds())
+	w.Duration = duration
 }
