@@ -56,7 +56,7 @@ func main() {
 
 	r := chi.NewRouter()
 
-	httpRequestLoggerMiddleware := _httpRequestLogger.HttpRequestLoggerMiddleware(logger)
+	httpRequestLoggerMiddleware := _httpRequestLogger.RequestLoggerMiddleware(logger)
 
 	r.Use(httpRequestLoggerMiddleware)
 
