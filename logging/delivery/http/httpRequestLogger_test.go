@@ -135,6 +135,16 @@ func TestGetIpAddressFromHttpRequest(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, "217.73.23.164", ipAddress)
 	})
+
+	t.Run("success with remoteAddr with port", func(t *testing.T) {
+		r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(""))
+		r.RemoteAddr = "217.73.23.164:3000"
+
+		ipAddress, err := getIPAddressFromHttpRequest(r)
+
+		assert.NoError(t, err)
+		assert.Equal(t, "217.73.23.164", ipAddress)
+	})
 }
 
 func TestGetHttpRequestData(t *testing.T) {

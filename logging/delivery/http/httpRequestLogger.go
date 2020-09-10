@@ -34,14 +34,6 @@ func isPrivateIPAddress(ipAddress string) (bool, error) {
 	return false, nil
 }
 
-func ipAddrFromRemoteAddr(s string) string {
-	idx := strings.LastIndex(s, ":")
-	if idx == -1 {
-		return s
-	}
-	return s[:idx]
-}
-
 func parseIPFromXForwardedForHeader(xForwardedFor string) (string, error) {
 	xForwardedForIps := strings.Split(xForwardedFor, ",")
 
@@ -59,6 +51,18 @@ func parseIPFromXForwardedForHeader(xForwardedFor string) (string, error) {
 	}
 
 	return "", nil
+}
+
+func ipAddrFromRemoteAddr(ipAddress string) string {
+	ipAddressPortIndex := strings.LastIndex(ipAddress, ":")
+	ipAddressContainsPort := ipAddressPortIndex != -1
+
+	if ipAddressContainsPort {
+		ipAddressWithoutPort := ipAddress[:ipAddressPortIndex]
+		return ipAddressWithoutPort
+	}
+
+	return ipAddress
 }
 
 func getIPAddressFromHttpRequest(r *http.Request) (string, error) {
