@@ -31,8 +31,10 @@ func (httpMetricsU *httpMetricsUsecase) GetHTTPRequestMetrics(r *http.Request) (
 	}, nil
 }
 
-func (httpMetricsU *httpMetricsUsecase) GetHTTPResponseMetrics() entity.HTTPResponseMetrics {
-	return entity.HTTPResponseMetrics{}
+func (httpMetricsU *httpMetricsUsecase) GetHTTPResponseMetrics(w *entity.ResponseWriterWithStatusCode) *entity.HTTPResponseMetrics {
+	return &entity.HTTPResponseMetrics{
+		Code: w.StatusCode,
+	}
 }
 
 var privateCIDRs = []string{

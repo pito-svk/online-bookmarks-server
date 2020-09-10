@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"peterparada.com/online-bookmarks/domain/entity"
 )
 
 func TestIsPrivateIpAddress(t *testing.T) {
@@ -209,5 +210,31 @@ func TestGetHTTPRequestMetrics(t *testing.T) {
 		assert.Equal(t, "GET", requestMetrics.Method)
 		assert.Equal(t, "https://www.example.com", requestMetrics.Referer)
 		assert.Equal(t, "217.73.23.163", requestMetrics.IP)
+	})
+}
+
+func TestGetHTTPResponseMetrics(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		u := NewHTTPMetricsUsecase()
+
+		_w := httptest.NewRecorder()
+		w := entity.NewResponseWriterWithStatusCode(_w)
+
+		responseMetrics := u.GetHTTPResponseMetrics(w)
+
+		assert.Equal(t, 200, responseMetrics.Code)
+	})
+
+	t.Run("success 2", func(t *testing.T) {
+		u := NewHTTPMetricsUsecase()
+
+		_w := httptest.NewRecorder()
+
+		w := entity.NewResponseWriterWithStatusCode(_w)
+		w.WriteHeader(404)
+
+		responseMetrics := u.GetHTTPResponseMetrics(w)
+
+		assert.Equal(t, 404, responseMetrics.Code)
 	})
 }
