@@ -12,7 +12,8 @@ import (
 	_authHttpDelivery "peterparada.com/online-bookmarks/auth/delivery/http"
 	_authUsecase "peterparada.com/online-bookmarks/auth/usecase"
 	"peterparada.com/online-bookmarks/domain"
-	_httpRequestLogger "peterparada.com/online-bookmarks/logging/delivery/http"
+	_httpMetricsHttpDelivery "peterparada.com/online-bookmarks/httpMetrics/delivery/http"
+	_httpMetricsUsecase "peterparada.com/online-bookmarks/httpMetrics/usecase"
 	"peterparada.com/online-bookmarks/logging/repository"
 	_pingHttpDelivery "peterparada.com/online-bookmarks/ping/delivery/http"
 	_pingUsecase "peterparada.com/online-bookmarks/ping/usecase"
@@ -56,10 +57,6 @@ func main() {
 
 	r := chi.NewRouter()
 
-	httpRequestLoggerMiddleware := _httpRequestLogger.RequestLoggerMiddleware(logger)
-
-	r.Use(httpRequestLoggerMiddleware)
-
 	fileDB, err := scribble.New(".", nil)
 	if err != nil {
 		log.Fatal("Error loding file database")
@@ -67,9 +64,11 @@ func main() {
 
 	userRepo := _userRepo.NewFileDBUserRepository(fileDB)
 
+	httpMetricsUsecase := _httpMetricsUsecase.NewHTTPMetricsUsecase()
 	pingUsecase := _pingUsecase.NewPingUsecase()
 	authUsecase := _authUsecase.NewAuthUsecase(userRepo)
 
+	_httpMetricsHttpDelivery.NewHTTPMetricsHandler(r, httpMetricsUsecase, logger)
 	_pingHttpDelivery.NewPingHandler(r, pingUsecase)
 	_authHttpDelivery.NewAuthHandler(r, authUsecase, logger, jwtSecret)
 

@@ -16,17 +16,17 @@ func NewHTTPMetricsUsecase() domain.HTTPMetricsUsecase {
 
 func (httpMetricsU *httpMetricsUsecase) GetHTTPRequestMetrics(r *http.Request) (*entity.HTTPRequestMetrics, error) {
 	return &entity.HTTPRequestMetrics{
-		URI: "/",
-		Method: "GET",
-		Referer: "",
+		URI:       "/",
+		Method:    "GET",
+		Referer:   "",
 		UserAgent: "",
-		IP: "127.0.0.1",
+		IP:        "127.0.0.1",
 	}, nil
 }
 
 func (httpMetricsU *httpMetricsUsecase) GetHTTPResponseMetrics(w *entity.ResponseWriterWithMetrics) *entity.HTTPResponseMetrics {
 	return &entity.HTTPResponseMetrics{
-		Code: 200,
+		Code:     200,
 		Duration: 50,
 	}
 }
