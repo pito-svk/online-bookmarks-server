@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"peterparada.com/online-bookmarks/domain"
+	"peterparada.com/online-bookmarks/domain/entity"
 )
 
 type HTTPMetricsHandler struct {
@@ -25,23 +26,27 @@ func (httpMetricsH *HTTPMetricsHandler) LogHTTPMetrics(next http.Handler) http.H
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		requestMetrics, err := httpMetricsH.HTTPMetricsUsecase.GetHTTPRequestMetrics(r)
 		if err != nil {
-			// TODO: send error 500
+			// TODO: send error 500 or just log the error ?
 		}
 
-		requestData := map[string]interface{}{
+		// usecase.logHttpRequestData(requestData)
+
+		wr := entity.NewResponseWriterWithMetrics(w)
+
+		next.ServeHTTP(wr, r)
+
+		responseMetrics := httpMetricsH.HTTPMetricsUsecase.GetHTTPResponseMetrics(wr)
+
+		httpMetrics := map[string]interface{}{
 			"uri":       requestMetrics.URI,
 			"method":    requestMetrics.Method,
 			"referer":   requestMetrics.Referer,
 			"userAgent": requestMetrics.UserAgent,
 			"ip":        requestMetrics.IP,
-			// "code":      httpRequestData.ResponseCode,
-			// "duration":  httpRequestData.RequestDuration,
+			"code":      responseMetrics.Code,
+			"duration":  responseMetrics.Duration,
 		}
 
-		// requestData := usecase.getHttpRequestData(...)
-
-		// usecase.logHttpRequestData(requestData)
-
-		httpMetricsH.Logger.Trace(requestData, "HTTP request")
+		httpMetricsH.Logger.Trace(httpMetrics, "HTTP request")
 	})
 }
