@@ -121,7 +121,7 @@ func getHTTPRequestData(r *http.Request, httpMetrics httpsnoop.Metrics) (*httpRe
 }
 
 // TODO: Test middleware also - rename whole module to handler
-func RequestLoggerMiddleware(logger domain.Logger) func(next http.Handler) http.Handler {
+func RequestLoggerMiddleware(logger domain.Logger) func (http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		handlerFn := func(w http.ResponseWriter, r *http.Request) {
 			httpMetrics := httpsnoop.CaptureMetrics(next, w, r)
