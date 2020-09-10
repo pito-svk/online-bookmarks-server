@@ -75,10 +75,10 @@ func getIPAddressFromHttpRequest(r *http.Request) (string, error) {
 		}
 	}
 
-	xRealIp := r.Header.Get("X-Real-Ip")
+	xRealIP := r.Header.Get("X-Real-Ip")
 
-	if xRealIp != "" {
-		return xRealIp, nil
+	if xRealIP != "" {
+		return xRealIP, nil
 	}
 
 	return ipAddrFromRemoteAddr(r.RemoteAddr), nil
