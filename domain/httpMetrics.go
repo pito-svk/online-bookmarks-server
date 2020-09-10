@@ -1,8 +1,12 @@
 package domain
 
-import "peterparada.com/online-bookmarks/domain/entity"
+import (
+	"net/http"
+
+	"peterparada.com/online-bookmarks/domain/entity"
+)
 
 type HTTPMetricsUsecase interface {
-	GetHTTPRequestMetrics() entity.HTTPRequestMetrics
+	GetHTTPRequestMetrics(r *http.Request) (*entity.HTTPRequestMetrics, error)
 	GetHTTPResponseMetrics() entity.HTTPResponseMetrics
 }
