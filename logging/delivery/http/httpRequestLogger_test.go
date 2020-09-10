@@ -175,7 +175,7 @@ func TestGetHttpRequestData(t *testing.T) {
 			Duration: time.Duration(233 * time.Millisecond),
 		}
 
-		httpRequestData, err := getHttpRequestData(r, httpResponseMetrics)
+		httpRequestData, err := getHTTPRequestData(r, httpResponseMetrics)
 
 		assert.NoError(t, err)
 		assert.Equal(t, "/auth/register", httpRequestData.URI)

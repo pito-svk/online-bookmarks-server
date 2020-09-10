@@ -103,7 +103,7 @@ type httpRequestData struct {
 	RequestDuration int
 }
 
-func getHttpRequestData(r *http.Request, httpMetrics httpsnoop.Metrics) (*httpRequestData, error) {
+func getHTTPRequestData(r *http.Request, httpMetrics httpsnoop.Metrics) (*httpRequestData, error) {
 	ip, err := getIPAddressFromHTTPRequest(r)
 	if err != nil {
 		return nil, err
@@ -125,7 +125,7 @@ func HttpRequestLoggerMiddleware(logger domain.Logger) func(next http.Handler) h
 	return func(next http.Handler) http.Handler {
 		handlerFn := func(w http.ResponseWriter, r *http.Request) {
 			httpMetrics := httpsnoop.CaptureMetrics(next, w, r)
-			httpRequestData, err := getHttpRequestData(r, httpMetrics)
+			httpRequestData, err := getHTTPRequestData(r, httpMetrics)
 			if err != nil {
 				// TODO: Implement - return internal server error probably
 			}
