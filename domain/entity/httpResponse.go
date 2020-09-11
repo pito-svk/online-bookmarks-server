@@ -35,17 +35,20 @@ func calcDurationInMs(t1 time.Time, t2 time.Time) int {
 	return int(t1.Sub(t2).Milliseconds())
 }
 
-func (h *HTTPHandlerSettingRequestDuration) ServeHTTP(w *ResponseWriterWithMetrics, r *http.Request) {
-	h.Handler.ServeHTTP(w, r)
-
-	duration := calcDurationInMs(time.Now(), w.requestTimeStart)
+func calcRequestDuration(requestStart time.Time, now time.Time) int {
+	duration := calcDurationInMs(time.Now(), requestStart)
 
 	if duration == 0 {
 		duration = 1
 	}
 
-	// TODO: Define a method for it
-	w.Duration = duration
+	return duration
+}
+
+func (h *HTTPHandlerSettingRequestDuration) ServeHTTP(w *ResponseWriterWithMetrics, r *http.Request) {
+	h.Handler.ServeHTTP(w, r)
+
+	w.Duration = calcRequestDuration(w.requestTimeStart, time.Now())
 }
 
 type httpErrorMessage struct {
