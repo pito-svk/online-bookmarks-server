@@ -49,21 +49,21 @@ type httpErrorMessage struct {
 }
 
 func DeliverErrorParsingJSONBodyHTTPError(w http.ResponseWriter) {
-	w.WriteHeader(400)
+	w.WriteHeader(http.StatusBadRequest)
 	json.NewEncoder(w).Encode(httpErrorMessage{Error: "Error parsing JSON body"})
 }
 
 func DeliverBadRequestHTTPError(w http.ResponseWriter, err error) {
-	w.WriteHeader(400)
+	w.WriteHeader(http.StatusBadRequest)
 	json.NewEncoder(w).Encode(httpErrorMessage{Error: err.Error()})
 }
 
 func DeliverConflictHTTPError(w http.ResponseWriter, err error) {
-	w.WriteHeader(409)
+	w.WriteHeader(http.StatusConflict)
 	json.NewEncoder(w).Encode(httpErrorMessage{Error: err.Error()})
 }
 
 func DeliverInternalServerErrorHTTPError(w http.ResponseWriter) {
-	w.WriteHeader(500)
+	w.WriteHeader(http.StatusInternalServerError)
 	json.NewEncoder(w).Encode(httpErrorMessage{Error: "Internal Server Error"})
 }
