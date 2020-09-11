@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"peterparada.com/online-bookmarks/domain/entity"
 	"peterparada.com/online-bookmarks/domain/mocks"
 )
 

@@ -11,6 +11,7 @@ import (
 type HTTPMetricsHandler struct {
 	HTTPMetricsUsecase domain.HTTPMetricsUsecase
 	Logger             domain.Logger
+	HTTPHandler        domain.HTTPHandlerSettingRequestDuration
 	HTTPMetrics        *entity.HTTPMetrics
 }
 
@@ -62,13 +63,19 @@ func (httpMetricsH *HTTPMetricsHandler) setHTTPMetrics(httpMetrics *entity.HTTPM
 	httpMetricsH.HTTPMetrics = httpMetrics
 }
 
+func (httpMetricsH *HTTPMetricsHandler) setHTTPHandler(httpHandler domain.HTTPHandlerSettingRequestDuration) {
+	httpMetricsH.HTTPHandler = httpHandler
+}
+
 func (httpMetricsH *HTTPMetricsHandler) LogHTTPMetrics(next http.Handler) http.Handler {
-	handlerSettingRequestDuration := entity.HTTPHandlerSettingRequestDuration{Handler: next}
+	if httpMetricsH.HTTPHandler == nil {
+		httpMetricsH.setHTTPHandler(&entity.HTTPHandlerSettingRequestDuration{Handler: next})
+	}
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		responseWriterWithMetrics := entity.NewResponseWriterWithMetrics(w)
 
-		handlerSettingRequestDuration.ServeHTTP(responseWriterWithMetrics, r)
+		httpMetricsH.HTTPHandler.ServeHTTP(responseWriterWithMetrics, r)
 
 		httpMetrics, err := httpMetricsH.getHTTPMetrics(responseWriterWithMetrics, r)
 		if err != nil {
