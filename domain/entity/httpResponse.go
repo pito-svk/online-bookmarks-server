@@ -31,10 +31,14 @@ type HTTPHandlerSettingRequestDuration struct {
 	http.Handler
 }
 
+func calcDurationInMs(t1 time.Time, t2 time.Time) int {
+	return int(t1.Sub(t2).Milliseconds())
+}
+
 func (h *HTTPHandlerSettingRequestDuration) ServeHTTP(w *ResponseWriterWithMetrics, r *http.Request) {
 	h.Handler.ServeHTTP(w, r)
 
-	duration := int(time.Now().Sub(w.requestTimeStart).Milliseconds())
+	duration := calcDurationInMs(time.Now(), w.requestTimeStart)
 
 	if duration == 0 {
 		duration = 1
