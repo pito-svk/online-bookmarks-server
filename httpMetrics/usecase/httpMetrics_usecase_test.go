@@ -82,7 +82,7 @@ func TestGetHTTPResponseMetrics(t *testing.T) {
 
 		responseMetrics := u.GetHTTPResponseMetrics(w)
 
-		assert.Equal(t, 200, responseMetrics.Code)
+		assert.Equal(t, http.StatusOK, responseMetrics.Code)
 		assert.Equal(t, 123, responseMetrics.Duration)
 	})
 
@@ -93,7 +93,7 @@ func TestGetHTTPResponseMetrics(t *testing.T) {
 
 		r := httptest.NewRequest("POST", "/users/register", strings.NewReader(""))
 		w := entity.NewResponseWriterWithMetrics(_w)
-		w.WriteHeader(404)
+		w.WriteHeader(http.StatusNotFound)
 
 		httpHandler := mocks.HTTPHandlerSettingRequestDuration{
 			Handler:           http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}),
@@ -105,7 +105,7 @@ func TestGetHTTPResponseMetrics(t *testing.T) {
 
 		responseMetrics := u.GetHTTPResponseMetrics(w)
 
-		assert.Equal(t, 404, responseMetrics.Code)
+		assert.Equal(t, http.StatusNotFound, responseMetrics.Code)
 		assert.Equal(t, 60, responseMetrics.Duration)
 	})
 }

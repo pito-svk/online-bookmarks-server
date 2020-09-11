@@ -102,7 +102,7 @@ func validateCreateUserInput(userData *userDataInput) error {
 }
 
 func deliverUserCreatedResponse(w http.ResponseWriter, response userCreatedResponse) {
-	w.WriteHeader(201)
+	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(response)
 }
 

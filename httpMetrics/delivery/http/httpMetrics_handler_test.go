@@ -28,7 +28,7 @@ func TestLogHTTPMetrics(t *testing.T) {
 		}
 
 		genericHTTPHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.WriteHeader(201)
+			w.WriteHeader(http.StatusCreated)
 		})
 		httpMetricsHandler := handler.LogHTTPMetrics(genericHTTPHandler)
 
@@ -58,7 +58,7 @@ func TestLogHTTPMetrics(t *testing.T) {
 		}
 
 		genericHTTPHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.WriteHeader(400)
+			w.WriteHeader(http.StatusBadRequest)
 		})
 		httpMetricsHandler := handler.LogHTTPMetrics(genericHTTPHandler)
 
@@ -88,7 +88,7 @@ func TestLogHTTPMetrics(t *testing.T) {
 		}
 
 		genericHTTPHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.WriteHeader(500)
+			w.WriteHeader(http.StatusInternalServerError)
 		})
 		httpMetricsHandler := handler.LogHTTPMetrics(genericHTTPHandler)
 
