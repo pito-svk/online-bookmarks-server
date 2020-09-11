@@ -47,7 +47,6 @@ func calcRequestDuration(requestStart time.Time, now time.Time) int {
 
 func (h *HTTPHandlerSettingRequestDuration) ServeHTTP(w *ResponseWriterWithMetrics, r *http.Request) {
 	h.Handler.ServeHTTP(w, r)
-
 	w.Duration = calcRequestDuration(w.requestTimeStart, time.Now())
 }
 
