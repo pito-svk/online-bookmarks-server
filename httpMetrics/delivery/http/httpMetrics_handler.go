@@ -47,20 +47,20 @@ func logHTTPMetrics(logger domain.Logger, httpMetrics map[string]interface{}) {
 
 func (httpMetricsH *HTTPMetricsHandler) LogHTTPMetrics(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		requestMetrics, err := httpMetricsH.HTTPMetricsUsecase.GetHTTPRequestMetrics(r)
-		if err != nil {
-			logInternalServerError(httpMetricsH.Logger, err)
-			entity.DeliverInternalServerErrorHTTPError(w)
-		}
-
 		writerWithMetrics := entity.NewResponseWriterWithMetrics(w)
 		handlerSettingRequestDuration := entity.HTTPHandlerSettingRequestDuration{Handler: next}
 
 		handlerSettingRequestDuration.ServeHTTP(writerWithMetrics, r)
 
+		requestMetrics, err := httpMetricsH.HTTPMetricsUsecase.GetHTTPRequestMetrics(r)
+		if err != nil {
+			logInternalServerError(httpMetricsH.Logger, err)
+			entity.DeliverInternalServerErrorHTTPError(w)
+		}
 		responseMetrics := httpMetricsH.HTTPMetricsUsecase.GetHTTPResponseMetrics(writerWithMetrics)
-		httpMetrics := composeHTTPMetrics(requestMetrics, responseMetrics)
 
-		logHTTPMetrics(httpMetricsH.Logger, httpMetrics)
+		httpMetrics := &entity.HTTPMetrics{RequestMetrics: requestMetrics, ResponseMetrics: responseMetrics}
+
+		logHTTPMetrics(httpMetricsH.Logger, httpMetrics.ToMap())
 	})
 }
