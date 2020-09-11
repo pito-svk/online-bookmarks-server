@@ -22,6 +22,18 @@ func NewHTTPMetricsHandler(router *chi.Mux, usecase domain.HTTPMetricsUsecase, l
 	router.Use(handler.LogHTTPMetrics)
 }
 
+func composeHTTPMetrics(requestMetrics *entity.HTTPRequestMetrics, responseMetrics *entity.HTTPResponseMetrics) map[string]interface{} {
+	return map[string]interface{}{
+		"uri":       requestMetrics.URI,
+		"method":    requestMetrics.Method,
+		"referer":   requestMetrics.Referer,
+		"userAgent": requestMetrics.UserAgent,
+		"ip":        requestMetrics.IP,
+		"code":      responseMetrics.Code,
+		"duration":  responseMetrics.Duration,
+	}
+}
+
 func logHTTPMetrics(logger domain.Logger, httpMetrics map[string]interface{}) {
 	logger.Trace(httpMetrics, "HTTP request")
 }
@@ -44,15 +56,7 @@ func (httpMetricsH *HTTPMetricsHandler) LogHTTPMetrics(next http.Handler) http.H
 		handlerSettingRequestDuration.ServeHTTP(writerWithMetrics, r)
 
 		responseMetrics := httpMetricsH.HTTPMetricsUsecase.GetHTTPResponseMetrics(writerWithMetrics)
-		httpMetrics := map[string]interface{}{
-			"uri":       requestMetrics.URI,
-			"method":    requestMetrics.Method,
-			"referer":   requestMetrics.Referer,
-			"userAgent": requestMetrics.UserAgent,
-			"ip":        requestMetrics.IP,
-			"code":      responseMetrics.Code,
-			"duration":  responseMetrics.Duration,
-		}
+		httpMetrics := composeHTTPMetrics(requestMetrics, responseMetrics)
 
 		logHTTPMetrics(httpMetricsH.Logger, httpMetrics)
 	})
