@@ -15,12 +15,17 @@ func NewHTTPMetricsUsecase() domain.HTTPMetricsUsecase {
 }
 
 func (httpMetricsU *httpMetricsUsecase) GetHTTPRequestMetrics(r *http.Request) (*entity.HTTPRequestMetrics, error) {
+	ip, err := entity.GetIPAddressFromHTTPRequest(r)
+	if err != nil {
+		return nil, err
+	}
+
 	return &entity.HTTPRequestMetrics{
 		URI:       r.URL.String(),
 		Method:    r.Method,
 		Referer:   r.Header.Get("Referer"),
 		UserAgent: r.Header.Get("User-Agent"),
-		IP:        "127.0.0.1",
+		IP:        ip,
 	}, nil
 }
 
