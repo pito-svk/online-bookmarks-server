@@ -27,18 +27,22 @@ func TestLogHTTPMetrics(t *testing.T) {
 			Logger:             mockLogger,
 		}
 
-		genericHTTPHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})
+		genericHTTPHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(201)
+		})
 		httpMetricsHandler := handler.LogHTTPMetrics(genericHTTPHandler)
 
 		httpMetricsHandler.ServeHTTP(w, r)
 
 		requestMetrics := handler.HTTPMetrics.RequestMetrics
+		responseMetrics := handler.HTTPMetrics.ResponseMetrics
 
 		assert.Equal(t, "/users/register", requestMetrics.URI)
 		assert.Equal(t, "POST", requestMetrics.Method)
 		assert.Equal(t, "https://www.example.com", requestMetrics.Referer)
 		assert.Equal(t, "Mozilla/5.0 (Linux; Android 6.0.1; SM-G935S Build/MMB29K; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/55.0.2883.91 Mobile Safari/537.36", requestMetrics.UserAgent)
 		assert.Equal(t, "217.73.23.164", requestMetrics.IP)
+		assert.Equal(t, http.StatusCreated, responseMetrics.Code)
 	})
 
 	t.Run("success 2", func(t *testing.T) {
@@ -53,18 +57,22 @@ func TestLogHTTPMetrics(t *testing.T) {
 			Logger:             mockLogger,
 		}
 
-		genericHTTPHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})
+		genericHTTPHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(400)
+		})
 		httpMetricsHandler := handler.LogHTTPMetrics(genericHTTPHandler)
 
 		httpMetricsHandler.ServeHTTP(w, r)
 
 		requestMetrics := handler.HTTPMetrics.RequestMetrics
+		responseMetrics := handler.HTTPMetrics.ResponseMetrics
 
 		assert.Equal(t, "/users/register", requestMetrics.URI)
 		assert.Equal(t, "POST", requestMetrics.Method)
 		assert.Equal(t, "https://www.example.com/example", requestMetrics.Referer)
 		assert.Equal(t, "Mozilla/5.0 (Linux; Android 7.1.1; G8231 Build/41.2.A.0.219; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/59.0.3071.125 Mobile Safari/537.36", requestMetrics.UserAgent)
 		assert.Equal(t, "217.73.23.164", requestMetrics.IP)
+		assert.Equal(t, http.StatusBadRequest, responseMetrics.Code)
 	})
 
 	t.Run("success 3", func(t *testing.T) {
@@ -79,17 +87,21 @@ func TestLogHTTPMetrics(t *testing.T) {
 			Logger:             mockLogger,
 		}
 
-		genericHTTPHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})
+		genericHTTPHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(500)
+		})
 		httpMetricsHandler := handler.LogHTTPMetrics(genericHTTPHandler)
 
 		httpMetricsHandler.ServeHTTP(w, r)
 
 		requestMetrics := handler.HTTPMetrics.RequestMetrics
+		responseMetrics := handler.HTTPMetrics.ResponseMetrics
 
 		assert.Equal(t, "/users/register", requestMetrics.URI)
 		assert.Equal(t, "POST", requestMetrics.Method)
 		assert.Equal(t, "https://www.example.com/example", requestMetrics.Referer)
 		assert.Equal(t, "Mozilla/5.0 (Linux; Android 7.1.1; G8231 Build/41.2.A.0.219; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/59.0.3071.125 Mobile Safari/537.36", requestMetrics.UserAgent)
 		assert.Equal(t, "217.73.23.163", requestMetrics.IP)
+		assert.Equal(t, http.StatusInternalServerError, responseMetrics.Code)
 	})
 }
