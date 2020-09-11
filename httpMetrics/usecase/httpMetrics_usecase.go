@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"net"
 	"net/http"
 	"strings"
 
@@ -38,14 +37,6 @@ func (httpMetricsU *httpMetricsUsecase) GetHTTPResponseMetrics(w *entity.Respons
 	}
 }
 
-var privateCIDRs = []string{
-	"127.0.0.0/8",
-	"192.168.0.0/16",
-	"172.16.0.0/12",
-	"10.0.0.0/8",
-	"169.254.0.0/16",
-}
-
 func getIPAddressFromHTTPRequest(r *http.Request) (string, error) {
 	xForwardedFor := r.Header.Get("X-Forwarded-For")
 
@@ -70,30 +61,15 @@ func getIPAddressFromHTTPRequest(r *http.Request) (string, error) {
 	return parseRemoteIPAddress(r.RemoteAddr), nil
 }
 
-func isPrivateIPAddress(ipAddress string) (bool, error) {
-	ip := net.ParseIP(ipAddress)
-
-	for _, privateCIDR := range privateCIDRs {
-		_, privateNetwork, err := net.ParseCIDR(privateCIDR)
-		if err != nil {
-			return false, err
-		}
-
-		if privateNetwork.Contains(ip) {
-			return true, nil
-		}
-	}
-
-	return false, nil
-}
-
 func parseIPFromXForwardedForHeader(xForwardedFor string) (string, error) {
 	xForwardedForIps := strings.Split(xForwardedFor, ",")
 
-	for _, ip := range xForwardedForIps {
-		ipWithoutSpaces := strings.TrimSpace(ip)
+	for _, ipFromHeader := range xForwardedForIps {
+		ipWithoutSpaces := strings.TrimSpace(ipFromHeader)
 
-		privateIP, err := isPrivateIPAddress(ipWithoutSpaces)
+		ip := entity.IPAddress{Address: ipWithoutSpaces}
+
+		privateIP, err := ip.IsPrivate()
 		if err != nil {
 			return "", err
 		}
