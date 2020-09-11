@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"encoding/json"
 	"net/http"
 	"time"
 )
@@ -41,4 +42,28 @@ func (h *HTTPHandlerSettingRequestDuration) ServeHTTP(w *ResponseWriterWithMetri
 
 	// TODO: Define a method for it
 	w.Duration = duration
+}
+
+type httpErrorMessage struct {
+	Error string `json:"error"`
+}
+
+func DeliverErrorParsingJSONBodyHTTPError(w http.ResponseWriter) {
+	w.WriteHeader(400)
+	json.NewEncoder(w).Encode(httpErrorMessage{Error: "Error parsing JSON body"})
+}
+
+func DeliverBadRequestHTTPError(w http.ResponseWriter, err error) {
+	w.WriteHeader(400)
+	json.NewEncoder(w).Encode(httpErrorMessage{Error: err.Error()})
+}
+
+func DeliverConflictHTTPError(w http.ResponseWriter, err error) {
+	w.WriteHeader(409)
+	json.NewEncoder(w).Encode(httpErrorMessage{Error: err.Error()})
+}
+
+func DeliverInternalServerErrorHTTPError(w http.ResponseWriter) {
+	w.WriteHeader(500)
+	json.NewEncoder(w).Encode(httpErrorMessage{Error: "Internal Server Error"})
 }

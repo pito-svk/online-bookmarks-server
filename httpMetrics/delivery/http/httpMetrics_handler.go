@@ -34,6 +34,13 @@ func composeHTTPMetrics(requestMetrics *entity.HTTPRequestMetrics, responseMetri
 	}
 }
 
+func logInternalServerError(logger domain.Logger, err error) {
+	logger.Error(map[string]interface{}{
+		"method":  "httpMetrics_handler/LogHTTPMetrics",
+		"pointer": "internal_server_error",
+	}, err)
+}
+
 func logHTTPMetrics(logger domain.Logger, httpMetrics map[string]interface{}) {
 	logger.Trace(httpMetrics, "HTTP request")
 }
@@ -42,7 +49,8 @@ func (httpMetricsH *HTTPMetricsHandler) LogHTTPMetrics(next http.Handler) http.H
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		requestMetrics, err := httpMetricsH.HTTPMetricsUsecase.GetHTTPRequestMetrics(r)
 		if err != nil {
-			// TODO: send error 500 or just log the error ?
+			logInternalServerError(httpMetricsH.Logger, err)
+			entity.DeliverInternalServerErrorHTTPError(w)
 		}
 
 		writerWithMetrics := entity.NewResponseWriterWithMetrics(w)

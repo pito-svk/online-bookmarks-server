@@ -101,26 +101,6 @@ func validateCreateUserInput(userData *userDataInput) error {
 	return err
 }
 
-func deliverErrorParsingJSONBodyHTTPError(w http.ResponseWriter) {
-	w.WriteHeader(400)
-	json.NewEncoder(w).Encode(httpErrorMessage{Error: "Error parsing JSON body"})
-}
-
-func deliverBadRequestHTTPError(w http.ResponseWriter, err error) {
-	w.WriteHeader(400)
-	json.NewEncoder(w).Encode(httpErrorMessage{Error: err.Error()})
-}
-
-func deliverConflictHTTPError(w http.ResponseWriter, err error) {
-	w.WriteHeader(409)
-	json.NewEncoder(w).Encode(httpErrorMessage{Error: err.Error()})
-}
-
-func deliverInternalServerErrorHTTPError(w http.ResponseWriter) {
-	w.WriteHeader(500)
-	json.NewEncoder(w).Encode(httpErrorMessage{Error: "Internal Server Error"})
-}
-
 func deliverUserCreatedResponse(w http.ResponseWriter, response userCreatedResponse) {
 	w.WriteHeader(201)
 	json.NewEncoder(w).Encode(response)
@@ -169,12 +149,12 @@ func (authH *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	userData, err := parseUserDataFromRequestBody(r)
 	if err != nil {
 		logErrorParsingJSONError(authH.Logger, err)
-		deliverErrorParsingJSONBodyHTTPError(w)
+		entity.DeliverErrorParsingJSONBodyHTTPError(w)
 		return
 	}
 	err = validateCreateUserInput(userData)
 	if err != nil {
-		deliverBadRequestHTTPError(w, err)
+		entity.DeliverBadRequestHTTPError(w, err)
 		return
 	}
 
@@ -182,10 +162,10 @@ func (authH *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	userResponse, err := authH.AuthUsecase.RegisterUser(&userObject)
 	if err != nil {
 		if err.Error() == "User already exists" {
-			deliverConflictHTTPError(w, err)
+			entity.DeliverConflictHTTPError(w, err)
 		} else {
 			logInternalServerError(authH.Logger, err)
-			deliverInternalServerErrorHTTPError(w)
+			entity.DeliverInternalServerErrorHTTPError(w)
 		}
 		return
 	}
