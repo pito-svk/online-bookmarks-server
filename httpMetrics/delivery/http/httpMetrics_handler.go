@@ -77,7 +77,6 @@ func (httpMetricsH *HTTPMetricsHandler) LogHTTPMetrics(next http.Handler) http.H
 		}
 
 		httpMetricsH.setHTTPMetrics(httpMetrics)
-
 		logHTTPMetrics(httpMetricsH.Logger, httpMetrics.ToMap())
 	})
 }
