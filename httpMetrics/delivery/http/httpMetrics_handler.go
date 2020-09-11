@@ -45,6 +45,18 @@ func logHTTPMetrics(logger domain.Logger, httpMetrics map[string]interface{}) {
 	logger.Trace(httpMetrics, "HTTP request")
 }
 
+func (httpMetricsH *HTTPMetricsHandler) getHTTPMetrics(w *entity.ResponseWriterWithMetrics, r *http.Request) (*entity.HTTPMetrics, error) {
+	requestMetrics, err := httpMetricsH.HTTPMetricsUsecase.GetHTTPRequestMetrics(r)
+	if err != nil {
+		return nil, err
+	}
+	responseMetrics := httpMetricsH.HTTPMetricsUsecase.GetHTTPResponseMetrics(w)
+
+	httpMetrics := entity.HTTPMetrics{RequestMetrics: requestMetrics, ResponseMetrics: responseMetrics}
+
+	return &httpMetrics, nil
+}
+
 func (httpMetricsH *HTTPMetricsHandler) LogHTTPMetrics(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		writerWithMetrics := entity.NewResponseWriterWithMetrics(w)
@@ -52,14 +64,11 @@ func (httpMetricsH *HTTPMetricsHandler) LogHTTPMetrics(next http.Handler) http.H
 
 		handlerSettingRequestDuration.ServeHTTP(writerWithMetrics, r)
 
-		requestMetrics, err := httpMetricsH.HTTPMetricsUsecase.GetHTTPRequestMetrics(r)
+		httpMetrics, err := httpMetricsH.getHTTPMetrics(writerWithMetrics, r)
 		if err != nil {
 			logInternalServerError(httpMetricsH.Logger, err)
 			entity.DeliverInternalServerErrorHTTPError(w)
 		}
-		responseMetrics := httpMetricsH.HTTPMetricsUsecase.GetHTTPResponseMetrics(writerWithMetrics)
-
-		httpMetrics := &entity.HTTPMetrics{RequestMetrics: requestMetrics, ResponseMetrics: responseMetrics}
 
 		logHTTPMetrics(httpMetricsH.Logger, httpMetrics.ToMap())
 	})
