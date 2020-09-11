@@ -49,9 +49,7 @@ func (httpMetricsH *HTTPMetricsHandler) LogHTTPMetrics(next http.Handler) http.H
 
 		writerWithMetrics := entity.NewResponseWriterWithMetrics(w)
 
-		handlerSettingRequestDuration := entity.HTTPHandlerSettingRequestDuration{
-			Handler: next,
-		}
+		handlerSettingRequestDuration := entity.HTTPHandlerSettingRequestDuration{Handler: next}
 
 		handlerSettingRequestDuration.ServeHTTP(writerWithMetrics, r)
 
