@@ -11,6 +11,7 @@ import (
 type HTTPMetricsHandler struct {
 	HTTPMetricsUsecase domain.HTTPMetricsUsecase
 	Logger             domain.Logger
+	HTTPMetrics        *entity.HTTPMetrics
 }
 
 func NewHTTPMetricsHandler(router *chi.Mux, usecase domain.HTTPMetricsUsecase, logger domain.Logger) {
@@ -57,18 +58,24 @@ func (httpMetricsH *HTTPMetricsHandler) getHTTPMetrics(w *entity.ResponseWriterW
 	return &httpMetrics, nil
 }
 
+func (httpMetricsH *HTTPMetricsHandler) setHTTPMetrics(httpMetrics *entity.HTTPMetrics) {
+	httpMetricsH.HTTPMetrics = httpMetrics
+}
+
 func (httpMetricsH *HTTPMetricsHandler) LogHTTPMetrics(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		writerWithMetrics := entity.NewResponseWriterWithMetrics(w)
+		responseWriterWithMetrics := entity.NewResponseWriterWithMetrics(w)
 		handlerSettingRequestDuration := entity.HTTPHandlerSettingRequestDuration{Handler: next}
 
-		handlerSettingRequestDuration.ServeHTTP(writerWithMetrics, r)
+		handlerSettingRequestDuration.ServeHTTP(responseWriterWithMetrics, r)
 
-		httpMetrics, err := httpMetricsH.getHTTPMetrics(writerWithMetrics, r)
+		httpMetrics, err := httpMetricsH.getHTTPMetrics(responseWriterWithMetrics, r)
 		if err != nil {
 			logInternalServerError(httpMetricsH.Logger, err)
 			entity.DeliverInternalServerErrorHTTPError(w)
 		}
+
+		httpMetricsH.setHTTPMetrics(httpMetrics)
 
 		logHTTPMetrics(httpMetricsH.Logger, httpMetrics.ToMap())
 	})
