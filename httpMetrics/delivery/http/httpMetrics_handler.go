@@ -63,9 +63,10 @@ func (httpMetricsH *HTTPMetricsHandler) setHTTPMetrics(httpMetrics *entity.HTTPM
 }
 
 func (httpMetricsH *HTTPMetricsHandler) LogHTTPMetrics(next http.Handler) http.Handler {
+	handlerSettingRequestDuration := entity.HTTPHandlerSettingRequestDuration{Handler: next}
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		responseWriterWithMetrics := entity.NewResponseWriterWithMetrics(w)
-		handlerSettingRequestDuration := entity.HTTPHandlerSettingRequestDuration{Handler: next}
 
 		handlerSettingRequestDuration.ServeHTTP(responseWriterWithMetrics, r)
 

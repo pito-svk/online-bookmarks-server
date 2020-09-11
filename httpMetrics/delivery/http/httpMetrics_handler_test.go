@@ -73,6 +73,7 @@ func TestLogHTTPMetrics(t *testing.T) {
 		assert.Equal(t, "Mozilla/5.0 (Linux; Android 7.1.1; G8231 Build/41.2.A.0.219; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/59.0.3071.125 Mobile Safari/537.36", requestMetrics.UserAgent)
 		assert.Equal(t, "217.73.23.164", requestMetrics.IP)
 		assert.Equal(t, http.StatusBadRequest, responseMetrics.Code)
+		// TODO: Test duration
 	})
 
 	t.Run("success 3", func(t *testing.T) {
@@ -103,5 +104,6 @@ func TestLogHTTPMetrics(t *testing.T) {
 		assert.Equal(t, "Mozilla/5.0 (Linux; Android 7.1.1; G8231 Build/41.2.A.0.219; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/59.0.3071.125 Mobile Safari/537.36", requestMetrics.UserAgent)
 		assert.Equal(t, "217.73.23.163", requestMetrics.IP)
 		assert.Equal(t, http.StatusInternalServerError, responseMetrics.Code)
+		// TODO: Test duration
 	})
 }
