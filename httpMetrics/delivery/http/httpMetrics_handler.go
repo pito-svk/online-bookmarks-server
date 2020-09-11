@@ -45,10 +45,7 @@ func (httpMetricsH *HTTPMetricsHandler) LogHTTPMetrics(next http.Handler) http.H
 			// TODO: send error 500 or just log the error ?
 		}
 
-		// usecase.logHttpRequestData(requestData)
-
 		writerWithMetrics := entity.NewResponseWriterWithMetrics(w)
-
 		handlerSettingRequestDuration := entity.HTTPHandlerSettingRequestDuration{Handler: next}
 
 		handlerSettingRequestDuration.ServeHTTP(writerWithMetrics, r)
