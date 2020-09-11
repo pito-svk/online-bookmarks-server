@@ -78,7 +78,7 @@ func TestGetHTTPResponseMetrics(t *testing.T) {
 			Duration:          123,
 		}
 
-		httpHandler.ServeHTTP(_w, r)
+		httpHandler.ServeHTTP(w, r)
 
 		responseMetrics := u.GetHTTPResponseMetrics(w)
 
@@ -101,7 +101,7 @@ func TestGetHTTPResponseMetrics(t *testing.T) {
 			Duration:          60,
 		}
 
-		httpHandler.ServeHTTP(_w, r)
+		httpHandler.ServeHTTP(w, r)
 
 		responseMetrics := u.GetHTTPResponseMetrics(w)
 

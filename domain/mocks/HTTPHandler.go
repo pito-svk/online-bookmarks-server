@@ -12,7 +12,7 @@ type HTTPHandlerSettingRequestDuration struct {
 	Duration          int
 }
 
-func (h *HTTPHandlerSettingRequestDuration) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	h.WriterWithMetrics.Duration = h.Duration
+func (h *HTTPHandlerSettingRequestDuration) ServeHTTP(w *entity.ResponseWriterWithMetrics, r *http.Request) {
+	w.Duration = h.Duration
 	h.Handler.ServeHTTP(w, r)
 }

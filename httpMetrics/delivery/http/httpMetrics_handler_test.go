@@ -16,22 +16,29 @@ func TestLogHTTPMetrics(t *testing.T) {
 	mockLogger := mocks.NewLogger()
 
 	t.Run("success", func(t *testing.T) {
-		w := httptest.NewRecorder()
+		_w := httptest.NewRecorder()
+		w := entity.NewResponseWriterWithMetrics(_w)
 
 		r := httptest.NewRequest("POST", "/users/register", strings.NewReader(""))
 		r.Header.Set("Referer", "https://www.example.com")
 		r.Header.Set("User-Agent", "Mozilla/5.0 (Linux; Android 6.0.1; SM-G935S Build/MMB29K; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/55.0.2883.91 Mobile Safari/537.36")
 		r.Header.Set("X-Forwarded-For", "192.168.2.1 , 217.73.23.164")
 
+		httpHandler := &mocks.HTTPHandlerSettingRequestDuration{
+			Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusCreated)
+			}),
+			WriterWithMetrics: w,
+			Duration:          136,
+		}
+
 		handler := HTTPMetricsHandler{
 			HTTPMetricsUsecase: mockUsecase,
 			Logger:             mockLogger,
+			HTTPHandler:        httpHandler,
 		}
 
-		genericHTTPHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.WriteHeader(http.StatusCreated)
-		})
-		httpMetricsHandler := handler.LogHTTPMetrics(genericHTTPHandler)
+		httpMetricsHandler := handler.LogHTTPMetrics(httpHandler.Handler)
 
 		httpMetricsHandler.ServeHTTP(w, r)
 
@@ -44,18 +51,30 @@ func TestLogHTTPMetrics(t *testing.T) {
 		assert.Equal(t, "Mozilla/5.0 (Linux; Android 6.0.1; SM-G935S Build/MMB29K; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/55.0.2883.91 Mobile Safari/537.36", requestMetrics.UserAgent)
 		assert.Equal(t, "217.73.23.164", requestMetrics.IP)
 		assert.Equal(t, http.StatusCreated, responseMetrics.Code)
+		assert.Equal(t, 136, responseMetrics.Duration)
 	})
 
 	t.Run("success 2", func(t *testing.T) {
-		w := httptest.NewRecorder()
+		_w := httptest.NewRecorder()
+		w := entity.NewResponseWriterWithMetrics(_w)
+
 		r := httptest.NewRequest("POST", "/users/register", strings.NewReader(""))
 		r.Header.Set("Referer", "https://www.example.com/example")
 		r.Header.Set("User-Agent", "Mozilla/5.0 (Linux; Android 7.1.1; G8231 Build/41.2.A.0.219; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/59.0.3071.125 Mobile Safari/537.36")
 		r.Header.Set("X-Real-Ip", "217.73.23.164")
 
+		httpHandler := &mocks.HTTPHandlerSettingRequestDuration{
+			Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusBadRequest)
+			}),
+			WriterWithMetrics: w,
+			Duration:          55,
+		}
+
 		handler := HTTPMetricsHandler{
 			HTTPMetricsUsecase: mockUsecase,
 			Logger:             mockLogger,
+			HTTPHandler:        httpHandler,
 		}
 
 		genericHTTPHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -74,19 +93,30 @@ func TestLogHTTPMetrics(t *testing.T) {
 		assert.Equal(t, "Mozilla/5.0 (Linux; Android 7.1.1; G8231 Build/41.2.A.0.219; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/59.0.3071.125 Mobile Safari/537.36", requestMetrics.UserAgent)
 		assert.Equal(t, "217.73.23.164", requestMetrics.IP)
 		assert.Equal(t, http.StatusBadRequest, responseMetrics.Code)
-		// TODO: Test duration
+		assert.Equal(t, 55, responseMetrics.Duration)
 	})
 
 	t.Run("success 3", func(t *testing.T) {
-		w := httptest.NewRecorder()
+		_w := httptest.NewRecorder()
+		w := entity.NewResponseWriterWithMetrics(_w)
+
 		r := httptest.NewRequest("POST", "/users/register", strings.NewReader(""))
 		r.Header.Set("Referer", "https://www.example.com/example")
 		r.Header.Set("User-Agent", "Mozilla/5.0 (Linux; Android 7.1.1; G8231 Build/41.2.A.0.219; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/59.0.3071.125 Mobile Safari/537.36")
 		r.RemoteAddr = "217.73.23.163"
 
+		httpHandler := &mocks.HTTPHandlerSettingRequestDuration{
+			Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusInternalServerError)
+			}),
+			WriterWithMetrics: w,
+			Duration:          62,
+		}
+
 		handler := HTTPMetricsHandler{
 			HTTPMetricsUsecase: mockUsecase,
 			Logger:             mockLogger,
+			HTTPHandler:        httpHandler,
 		}
 
 		genericHTTPHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -105,6 +135,6 @@ func TestLogHTTPMetrics(t *testing.T) {
 		assert.Equal(t, "Mozilla/5.0 (Linux; Android 7.1.1; G8231 Build/41.2.A.0.219; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/59.0.3071.125 Mobile Safari/537.36", requestMetrics.UserAgent)
 		assert.Equal(t, "217.73.23.163", requestMetrics.IP)
 		assert.Equal(t, http.StatusInternalServerError, responseMetrics.Code)
-		// TODO: Test duration
+		assert.Equal(t, 62, responseMetrics.Duration)
 	})
 }
