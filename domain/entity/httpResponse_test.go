@@ -1,7 +1,9 @@
 package entity
 
 import (
+	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -87,6 +89,13 @@ func TestDeliverHTTPErrors(t *testing.T) {
 		DeliverErrorParsingJSONBodyHTTPError(w)
 
 		assert.Equal(t, http.StatusBadRequest, w.Code)
+
+		var httpResponse httpErrorMessage
+		if err := json.NewDecoder(w.Result().Body).Decode(&httpResponse); err != nil {
+			log.Fatal(err)
+		}
+
+		assert.Equal(t, "Error parsing JSON body", httpResponse.Error)
 	})
 
 	t.Run("bad request error", func(t *testing.T) {
@@ -97,5 +106,44 @@ func TestDeliverHTTPErrors(t *testing.T) {
 		DeliverBadRequestHTTPError(w, err)
 
 		assert.Equal(t, http.StatusBadRequest, w.Code)
+
+		var httpResponse httpErrorMessage
+		if err := json.NewDecoder(w.Result().Body).Decode(&httpResponse); err != nil {
+			log.Fatal(err)
+		}
+
+		assert.Equal(t, "Bad request", httpResponse.Error)
+	})
+
+	t.Run("conflict error", func(t *testing.T) {
+		w := httptest.NewRecorder()
+
+		err := errors.New("User already exists")
+
+		DeliverConflictHTTPError(w, err)
+
+		assert.Equal(t, http.StatusConflict, w.Code)
+
+		var httpResponse httpErrorMessage
+		if err := json.NewDecoder(w.Result().Body).Decode(&httpResponse); err != nil {
+			log.Fatal(err)
+		}
+
+		assert.Equal(t, "User already exists", httpResponse.Error)
+	})
+
+	t.Run("internal server error", func(t *testing.T) {
+		w := httptest.NewRecorder()
+
+		DeliverInternalServerErrorHTTPError(w)
+
+		assert.Equal(t, http.StatusInternalServerError, w.Code)
+
+		var httpResponse httpErrorMessage
+		if err := json.NewDecoder(w.Result().Body).Decode(&httpResponse); err != nil {
+			log.Fatal(err)
+		}
+
+		assert.Equal(t, "Internal Server Error", httpResponse.Error)
 	})
 }
