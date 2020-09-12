@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -76,5 +77,25 @@ func TestServeHTTP(t *testing.T) {
 		handler.ServeHTTP(w, r)
 
 		assert.Equal(t, 5, w.Duration)
+	})
+}
+
+func TestDeliverHTTPErrors(t *testing.T) {
+	t.Run("error parsing JSON body error", func(t *testing.T) {
+		w := httptest.NewRecorder()
+
+		DeliverErrorParsingJSONBodyHTTPError(w)
+
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+	})
+
+	t.Run("bad request error", func(t *testing.T) {
+		w := httptest.NewRecorder()
+
+		err := errors.New("Bad request")
+
+		DeliverBadRequestHTTPError(w, err)
+
+		assert.Equal(t, http.StatusBadRequest, w.Code)
 	})
 }
