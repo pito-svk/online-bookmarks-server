@@ -69,3 +69,8 @@ func DeliverInternalServerErrorHTTPError(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusInternalServerError)
 	json.NewEncoder(w).Encode(httpErrorMessage{Error: "Internal Server Error"})
 }
+
+func DeliverEndpointNotFoundError(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusNotFound)
+	json.NewEncoder(w).Encode(httpErrorMessage{Error: "Endpoint not found"})
+}
