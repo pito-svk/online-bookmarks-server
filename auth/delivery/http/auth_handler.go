@@ -132,10 +132,10 @@ func logErrorParsingJSONError(logger domain.Logger, err error) {
 	}, err)
 }
 
-func logInternalServerError(logger domain.Logger, err error) {
+func logInternalServerError(logger domain.Logger, err error, pointer string) {
 	logger.Error(map[string]interface{}{
 		"method":  "auth_handler/RegisterUser",
-		"pointer": "internal_server_error",
+		"pointer": pointer,
 	}, err)
 }
 
@@ -160,14 +160,14 @@ func (authH *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		if err.Error() == "User already exists" {
 			entity.DeliverConflictHTTPError(w, err)
 		} else {
-			logInternalServerError(authH.Logger, err)
+			logInternalServerError(authH.Logger, err, "register_user")
 			entity.DeliverInternalServerErrorHTTPError(w)
 		}
 		return
 	}
 	authToken, err := authH.AuthUsecase.GenerateAuthToken(userResponse.ID, authH.JwtSecret)
 	if err != nil {
-		logInternalServerError(authH.Logger, err)
+		logInternalServerError(authH.Logger, err, "generate_auth_token")
 		entity.DeliverInternalServerErrorHTTPError(w)
 	}
 
