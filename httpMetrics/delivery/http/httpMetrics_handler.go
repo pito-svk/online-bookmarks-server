@@ -24,18 +24,6 @@ func NewHTTPMetricsHandler(router *chi.Mux, usecase domain.HTTPMetricsUsecase, l
 	router.Use(handler.LogHTTPMetrics)
 }
 
-func composeHTTPMetrics(requestMetrics *entity.HTTPRequestMetrics, responseMetrics *entity.HTTPResponseMetrics) map[string]interface{} {
-	return map[string]interface{}{
-		"uri":       requestMetrics.URI,
-		"method":    requestMetrics.Method,
-		"referer":   requestMetrics.Referer,
-		"userAgent": requestMetrics.UserAgent,
-		"ip":        requestMetrics.IP,
-		"code":      responseMetrics.Code,
-		"duration":  responseMetrics.Duration,
-	}
-}
-
 func logInternalServerError(logger domain.Logger, err error) {
 	logger.Error(map[string]interface{}{
 		"method":  "httpMetrics_handler/LogHTTPMetrics",
