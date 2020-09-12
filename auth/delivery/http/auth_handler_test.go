@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -16,6 +17,61 @@ func TestLowercaseFirstLetter(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		assert.Equal(t, lowercaseFirstLetter("Email"), "email")
 		assert.Equal(t, lowercaseFirstLetter("FirstName"), "firstName")
+	})
+}
+
+func TestValidateCreateUserInput(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		userData := userDataInput{
+			Email:     "random@example.com",
+			Password:  "demouser",
+			FirstName: "John",
+			LastName:  "Doe",
+		}
+
+		err := validateCreateUserInput(&userData)
+
+		assert.NoError(t, err)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		userData := userDataInput{
+			Email:     "invalidEmail.com",
+			Password:  "demouser",
+			FirstName: "John",
+			LastName:  "Doe",
+		}
+
+		err := validateCreateUserInput(&userData)
+
+		assert.Error(t, err)
+	})
+}
+
+func TestDeliverUserCreatedResponse(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		w := httptest.NewRecorder()
+
+		user := userCreatedResponse{
+			ID:        "5f555a4686dbe11fc3adbb9b",
+			Email:     "random@example.com",
+			FirstName: "John",
+			LastName:  "Doe",
+			AuthData: authData{
+				Token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmNWIyOTA5NjMwZTdmMmQ5NWU5MjZkMCJ9.CxxXHpVzS5f0Psl34iLXR9sg3HCEB0dYglMfhvWHoZ4",
+			},
+		}
+
+		deliverUserCreatedResponse(w, user)
+
+		assert.Equal(t, http.StatusCreated, w.Code)
+
+		var httpResponse userCreatedResponse
+		if err := json.NewDecoder(w.Result().Body).Decode(&httpResponse); err != nil {
+			log.Fatal(err)
+		}
+
+		assert.Equal(t, user, httpResponse)
 	})
 }
 

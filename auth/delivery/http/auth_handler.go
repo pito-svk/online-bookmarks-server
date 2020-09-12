@@ -48,10 +48,6 @@ type userCreatedResponse struct {
 	AuthData  authData `json:"authData"`
 }
 
-type httpErrorMessage struct {
-	Error string `json:"error"`
-}
-
 func setJSONContentTypeInResponse(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
 }
@@ -101,28 +97,8 @@ func validateCreateUserInput(userData *userDataInput) error {
 	return err
 }
 
-func deliverErrorParsingJSONBodyHttpError(w http.ResponseWriter) {
-	w.WriteHeader(400)
-	json.NewEncoder(w).Encode(httpErrorMessage{Error: "Error parsing JSON body"})
-}
-
-func deliverBadRequestHttpError(w http.ResponseWriter, err error) {
-	w.WriteHeader(400)
-	json.NewEncoder(w).Encode(httpErrorMessage{Error: err.Error()})
-}
-
-func deliverConflictHttpError(w http.ResponseWriter, err error) {
-	w.WriteHeader(409)
-	json.NewEncoder(w).Encode(httpErrorMessage{Error: err.Error()})
-}
-
-func deliverInternalServerErrorHttpError(w http.ResponseWriter) {
-	w.WriteHeader(500)
-	json.NewEncoder(w).Encode(httpErrorMessage{Error: "Internal Server Error"})
-}
-
 func deliverUserCreatedResponse(w http.ResponseWriter, response userCreatedResponse) {
-	w.WriteHeader(201)
+	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -149,18 +125,32 @@ func composeUserCreatedResponse(user *entity.User, authToken string) userCreated
 	}
 }
 
+func logErrorParsingJSONError(logger domain.Logger, err error) {
+	logger.Error(map[string]interface{}{
+		"method":  "auth_handler/RegisterUser",
+		"pointer": "error_parsing_json",
+	}, err)
+}
+
+func logInternalServerError(logger domain.Logger, err error, pointer string) {
+	logger.Error(map[string]interface{}{
+		"method":  "auth_handler/RegisterUser",
+		"pointer": pointer,
+	}, err)
+}
+
 func (authH *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	setJSONContentTypeInResponse(w)
 
 	userData, err := parseUserDataFromRequestBody(r)
 	if err != nil {
-		authH.Logger.Error(err)
-		deliverErrorParsingJSONBodyHttpError(w)
+		logErrorParsingJSONError(authH.Logger, err)
+		entity.DeliverErrorParsingJSONBodyHTTPError(w)
 		return
 	}
 	err = validateCreateUserInput(userData)
 	if err != nil {
-		deliverBadRequestHttpError(w, err)
+		entity.DeliverBadRequestHTTPError(w, err)
 		return
 	}
 
@@ -168,16 +158,20 @@ func (authH *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	userResponse, err := authH.AuthUsecase.RegisterUser(&userObject)
 	if err != nil {
 		if err.Error() == "User already exists" {
-			deliverConflictHttpError(w, err)
+			entity.DeliverConflictHTTPError(w, err)
 		} else {
-			authH.Logger.Error(err)
-			deliverInternalServerErrorHttpError(w)
+			logInternalServerError(authH.Logger, err, "register_user")
+			entity.DeliverInternalServerErrorHTTPError(w)
 		}
 		return
 	}
 	authToken, err := authH.AuthUsecase.GenerateAuthToken(userResponse.ID, authH.JwtSecret)
+	if err != nil {
+		logInternalServerError(authH.Logger, err, "generate_auth_token")
+		entity.DeliverInternalServerErrorHTTPError(w)
+	}
+
 	response := composeUserCreatedResponse(userResponse, authToken)
 
 	deliverUserCreatedResponse(w, response)
-	return
 }
