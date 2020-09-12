@@ -32,7 +32,7 @@ type HTTPHandlerSettingRequestDuration struct {
 }
 
 func calcRequestDuration(requestStart time.Time, now time.Time) int {
-	duration := calcDurationInMs(time.Now(), requestStart)
+	duration := calcDurationInMs(now, requestStart)
 
 	if duration == 0 {
 		duration = 1

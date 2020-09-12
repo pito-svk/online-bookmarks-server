@@ -24,3 +24,14 @@ func TestNewResponseWriterWithMetrics(t *testing.T) {
 		assert.Equal(t, 400, w.StatusCode)
 	})
 }
+
+func TestCalcRequestDuration(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		requestStart := time.Now()
+		now := requestStart.Add(time.Millisecond * 50)
+
+		duration := calcRequestDuration(requestStart, now)
+
+		assert.Equal(t, 50, duration)
+	})
+}
