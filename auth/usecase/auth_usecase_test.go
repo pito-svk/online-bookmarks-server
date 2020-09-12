@@ -8,7 +8,7 @@ import (
 	"peterparada.com/online-bookmarks/domain/mocks"
 )
 
-func TestRegister(t *testing.T) {
+func TestRegisterUser(t *testing.T) {
 	mockUserRepo := new(mocks.UserRepository)
 
 	t.Run("success", func(t *testing.T) {
@@ -54,5 +54,21 @@ func TestRegister(t *testing.T) {
 
 		assert.Error(t, err)
 		assert.Nil(t, duplicateUser)
+	})
+}
+
+func TestGenerateAuthToken(t *testing.T) {
+	mockUserRepo := new(mocks.UserRepository)
+
+	t.Run("success", func(t *testing.T) {
+		u := NewAuthUsecase(mockUserRepo)
+
+		userID := "5f57fbcceb629b0a85fef3b3"
+		jwtSecret := "SECRET"
+
+		authToken, err := u.GenerateAuthToken(userID, jwtSecret)
+
+		assert.NoError(t, err)
+		assert.NotEmpty(t, authToken)
 	})
 }
