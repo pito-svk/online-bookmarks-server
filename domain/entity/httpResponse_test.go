@@ -18,5 +18,9 @@ func TestNewResponseWriterWithMetrics(t *testing.T) {
 		assert.Equal(t, 0, w.Duration)
 		assert.IsType(t, time.Time{}, w.requestTimeStart)
 		assert.IsType(t, _w, w.ResponseWriter)
+
+		w.WriteHeader(400)
+
+		assert.Equal(t, 400, w.StatusCode)
 	})
 }
