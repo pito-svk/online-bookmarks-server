@@ -48,10 +48,6 @@ type userCreatedResponse struct {
 	AuthData  authData `json:"authData"`
 }
 
-type httpErrorMessage struct {
-	Error string `json:"error"`
-}
-
 func setJSONContentTypeInResponse(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
 }
@@ -170,8 +166,12 @@ func (authH *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	authToken, err := authH.AuthUsecase.GenerateAuthToken(userResponse.ID, authH.JwtSecret)
+	if err != nil {
+		logInternalServerError(authH.Logger, err)
+		entity.DeliverInternalServerErrorHTTPError(w)
+	}
+
 	response := composeUserCreatedResponse(userResponse, authToken)
 
 	deliverUserCreatedResponse(w, response)
-	return
 }
