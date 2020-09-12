@@ -34,4 +34,12 @@ func TestCalcRequestDuration(t *testing.T) {
 
 		assert.Equal(t, 50, duration)
 	})
+
+	t.Run("success 2", func(t *testing.T) {
+		requestStart := time.Now()
+
+		duration := calcRequestDuration(requestStart, requestStart)
+
+		assert.Equal(t, 1, duration)
+	})
 }
