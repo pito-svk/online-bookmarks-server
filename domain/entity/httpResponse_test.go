@@ -3,6 +3,7 @@ package entity
 import (
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 
@@ -41,5 +42,39 @@ func TestCalcRequestDuration(t *testing.T) {
 		duration := calcRequestDuration(requestStart, requestStart)
 
 		assert.Equal(t, 1, duration)
+	})
+}
+
+func TestServeHTTP(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		_w := httptest.NewRecorder()
+		w := NewResponseWriterWithMetrics(_w)
+
+		r := httptest.NewRequest("GET", "/ping", strings.NewReader(""))
+
+		handler := HTTPHandlerSettingRequestDuration{
+			Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}),
+		}
+
+		handler.ServeHTTP(w, r)
+
+		assert.Equal(t, 1, w.Duration)
+	})
+
+	t.Run("success 2", func(t *testing.T) {
+		_w := httptest.NewRecorder()
+		w := NewResponseWriterWithMetrics(_w)
+
+		w.requestTimeStart = time.Now().Add(-time.Millisecond * 5)
+
+		r := httptest.NewRequest("GET", "/ping", strings.NewReader(""))
+
+		handler := HTTPHandlerSettingRequestDuration{
+			Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}),
+		}
+
+		handler.ServeHTTP(w, r)
+
+		assert.Equal(t, 5, w.Duration)
 	})
 }
