@@ -146,4 +146,19 @@ func TestDeliverHTTPErrors(t *testing.T) {
 
 		assert.Equal(t, "Internal Server Error", httpResponse.Error)
 	})
+
+	t.Run("endpoint not found", func(t *testing.T) {
+		w := httptest.NewRecorder()
+
+		DeliverEndpointNotFoundError(w)
+
+		assert.Equal(t, http.StatusNotFound, w.Code)
+
+		var httpResponse httpErrorMessage
+		if err := json.NewDecoder(w.Result().Body).Decode(&httpResponse); err != nil {
+			log.Fatal(err)
+		}
+
+		assert.Equal(t, "Endpoint not found", httpResponse.Error)
+	})
 }

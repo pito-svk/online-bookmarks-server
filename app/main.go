@@ -12,6 +12,7 @@ import (
 	_authHttpDelivery "peterparada.com/online-bookmarks/auth/delivery/http"
 	_authUsecase "peterparada.com/online-bookmarks/auth/usecase"
 	"peterparada.com/online-bookmarks/domain"
+	_endpointNotFoundHttpDelivery "peterparada.com/online-bookmarks/endpointNotFound/delivery/http"
 	_httpMetricsHttpDelivery "peterparada.com/online-bookmarks/httpMetrics/delivery/http"
 	_httpMetricsUsecase "peterparada.com/online-bookmarks/httpMetrics/usecase"
 	"peterparada.com/online-bookmarks/logging/repository"
@@ -69,6 +70,8 @@ func main() {
 	authUsecase := _authUsecase.NewAuthUsecase(userRepo)
 
 	_httpMetricsHttpDelivery.NewHTTPMetricsHandler(r, httpMetricsUsecase, logger)
+	_endpointNotFoundHttpDelivery.NewEndpointNotFoundHandler(r)
+
 	_pingHttpDelivery.NewPingHandler(r, pingUsecase)
 	_authHttpDelivery.NewAuthHandler(r, authUsecase, logger, jwtSecret)
 
