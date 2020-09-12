@@ -28,12 +28,12 @@ func TestToMap(t *testing.T) {
 
 		httpMetricsJSON := httpMetrics.ToMap()
 
-		assert.Equal(t, httpMetricsJSON["uri"], "/ping")
-		assert.Equal(t, httpMetricsJSON["method"], "GET")
-		assert.Equal(t, httpMetricsJSON["referer"], "https://www.example.com/ping")
-		assert.Equal(t, httpMetricsJSON["userAgent"], "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36")
-		assert.Equal(t, httpMetricsJSON["ip"], "217.73.23.163")
-		assert.Equal(t, httpMetricsJSON["code"], 200)
-		assert.Equal(t, httpMetricsJSON["duration"], 1)
+		assert.Equal(t, "/ping", httpMetricsJSON["uri"])
+		assert.Equal(t, "GET", httpMetricsJSON["method"])
+		assert.Equal(t, "https://www.example.com/ping", httpMetricsJSON["referer"])
+		assert.Equal(t, "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36", httpMetricsJSON["userAgent"])
+		assert.Equal(t, "217.73.23.163", httpMetricsJSON["ip"])
+		assert.Equal(t, 200, httpMetricsJSON["code"])
+		assert.Equal(t, 1, httpMetricsJSON["duration"])
 	})
 }
