@@ -97,9 +97,14 @@ func validateCreateUserInput(userData *userDataInput) error {
 	return err
 }
 
-func deliverUserCreatedResponse(w http.ResponseWriter, response userCreatedResponse) {
+func deliverUserCreatedResponse(w http.ResponseWriter, response userCreatedResponse) error {
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(response)
+	err := json.NewEncoder(w).Encode(response)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func composeUserObjectFromUserData(userData *userDataInput) entity.User {
@@ -173,5 +178,9 @@ func (authH *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 
 	response := composeUserCreatedResponse(userResponse, authToken)
 
-	deliverUserCreatedResponse(w, response)
+	err = deliverUserCreatedResponse(w, response)
+	if err != nil {
+		logInternalServerError(authH.Logger, err, "deliver_user_response")
+		entity.DeliverInternalServerErrorHTTPError(w)
+	}
 }

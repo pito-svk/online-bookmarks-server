@@ -62,7 +62,10 @@ func TestDeliverUserCreatedResponse(t *testing.T) {
 			},
 		}
 
-		deliverUserCreatedResponse(w, user)
+		err := deliverUserCreatedResponse(w, user)
+		if err != nil {
+			panic(err)
+		}
 
 		assert.Equal(t, http.StatusCreated, w.Code)
 
@@ -108,7 +111,10 @@ func TestRegister(t *testing.T) {
 
 		var jsonResponse map[string]interface{}
 
-		json.Unmarshal(w.Body.Bytes(), &jsonResponse)
+		err = json.Unmarshal(w.Body.Bytes(), &jsonResponse)
+		if err != nil {
+			panic(err)
+		}
 
 		assert.Equal(t, http.StatusCreated, w.Code)
 		assert.NotEmpty(t, jsonResponse["id"])
@@ -148,7 +154,10 @@ func TestRegister(t *testing.T) {
 
 		var jsonResponse map[string]interface{}
 
-		json.Unmarshal(w.Body.Bytes(), &jsonResponse)
+		err := json.Unmarshal(w.Body.Bytes(), &jsonResponse)
+		if err != nil {
+			panic(err)
+		}
 
 		assert.Equal(t, http.StatusConflict, w.Code)
 		assert.Equal(t, "User already exists", jsonResponse["error"])

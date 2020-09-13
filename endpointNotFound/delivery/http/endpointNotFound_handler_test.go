@@ -20,7 +20,10 @@ func TestHandleEndpointNotFound(t *testing.T) {
 
 		var jsonResponse map[string]interface{}
 
-		json.Unmarshal(w.Body.Bytes(), &jsonResponse)
+		err := json.Unmarshal(w.Body.Bytes(), &jsonResponse)
+		if err != nil {
+			panic(err)
+		}
 
 		assert.Equal(t, http.StatusNotFound, w.Code)
 		assert.Equal(t, "Endpoint not found", jsonResponse["error"])

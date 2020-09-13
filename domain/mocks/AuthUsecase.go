@@ -17,7 +17,10 @@ func NewAuthUsecase(userRepo domain.UserRepository) domain.AuthUsecase {
 
 func (a *authUsecase) RegisterUser(user *entity.User) (*entity.User, error) {
 	user.SetID()
-	user.SetHashedPassword()
+	err := user.SetHashedPassword()
+	if err != nil {
+		panic(err)
+	}
 
 	return a.userRepo.Store(user)
 }
@@ -27,7 +30,10 @@ func (a *authUsecase) GenerateAuthToken(userID string, jwtSecret string) (string
 		"id": userID,
 	}
 
-	authToken, _ := entity.GenerateAuthToken(claimData, jwtSecret)
+	authToken, err := entity.GenerateAuthToken(claimData, jwtSecret)
+	if err != nil {
+		panic(err)
+	}
 
 	return authToken, nil
 }

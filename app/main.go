@@ -79,5 +79,8 @@ func main() {
 	server := &http.Server{Addr: port, Handler: r}
 
 	log.Printf("Server started on %s", port)
-	server.ListenAndServe()
+	err = server.ListenAndServe()
+	if err != nil {
+		panic(err)
+	}
 }
