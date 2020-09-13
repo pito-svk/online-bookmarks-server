@@ -384,6 +384,7 @@ func TestLogin(t *testing.T) {
 
 		json.Unmarshal(w.Body.Bytes(), &jsonResponse)
 
+		assert.Equal(t, http.StatusOK, w.Code)
 		assert.NotEmpty(t, jsonResponse["token"])
 	})
 }

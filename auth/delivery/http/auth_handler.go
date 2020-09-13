@@ -183,5 +183,4 @@ func (authH *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (authH *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
-
 }
