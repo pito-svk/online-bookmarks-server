@@ -332,3 +332,58 @@ func TestRegister(t *testing.T) {
 		assert.Equal(t, "Error parsing JSON body", jsonResponse["error"])
 	})
 }
+
+func TestLogin(t *testing.T) {
+	mockUserRepo := new(mocks.UserRepository)
+	mockUsecase := mocks.NewAuthUsecase(mockUserRepo)
+	mockLogger := mocks.NewLogger()
+	jwtSecret := "SECRET"
+
+	t.Run("success", func(t *testing.T) {
+		_w := httptest.NewRecorder()
+
+		userData := userDataInput{
+			Email:     "random@example.com",
+			Password:  "demouser",
+			FirstName: "John",
+			LastName:  "Doe",
+		}
+
+		userDataJSON, err := json.Marshal(userData)
+		if err != nil {
+			panic(err)
+		}
+
+		_r := httptest.NewRequest("POST", "/auth/register", strings.NewReader(string(userDataJSON)))
+
+		handler := AuthHandler{
+			AuthUsecase: mockUsecase,
+			Logger:      mockLogger,
+			JwtSecret:   jwtSecret,
+		}
+
+		handler.RegisterUser(_w, _r)
+
+		w := httptest.NewRecorder()
+
+		authData := loginDataInput{
+			Email:    "random@example.com",
+			Password: "demouser",
+		}
+
+		authDataJSON, err := json.Marshal(authData)
+		if err != nil {
+			panic(err)
+		}
+
+		r := httptest.NewRequest("POST", "/auth/login", strings.NewReader(string(authDataJSON)))
+
+		handler.Login(w, r)
+
+		var jsonResponse map[string]interface{}
+
+		json.Unmarshal(w.Body.Bytes(), &jsonResponse)
+
+		assert.NotEmpty(t, jsonResponse["token"])
+	})
+}

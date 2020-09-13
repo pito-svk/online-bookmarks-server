@@ -27,6 +27,7 @@ func NewAuthHandler(router *chi.Mux, usecase domain.AuthUsecase, logger domain.L
 	}
 
 	router.Post("/auth/register", handler.RegisterUser)
+	router.Post("/auth/login", handler.Login)
 }
 
 type userDataInput struct {
@@ -34,6 +35,11 @@ type userDataInput struct {
 	Password  string `json:"password" validate:"required"`
 	FirstName string `json:"firstName" validate:"required"`
 	LastName  string `json:"lastName" validate:"required"`
+}
+
+type loginDataInput struct {
+	Email    string
+	Password string
 }
 
 type authData struct {
@@ -174,4 +180,8 @@ func (authH *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	response := composeUserCreatedResponse(userResponse, authToken)
 
 	deliverUserCreatedResponse(w, response)
+}
+
+func (authH *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
+
 }
