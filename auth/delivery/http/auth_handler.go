@@ -54,6 +54,10 @@ type userCreatedResponse struct {
 	AuthData  authData `json:"authData"`
 }
 
+type loginResponse struct {
+	Token string `json:"token"`
+}
+
 func setJSONContentTypeInResponse(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
 }
@@ -183,4 +187,5 @@ func (authH *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (authH *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
+	json.NewEncoder(w).Encode(loginResponse{Token: "TODO"})
 }
