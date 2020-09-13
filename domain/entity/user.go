@@ -13,6 +13,7 @@ type User struct {
 	LastName  string
 }
 
+// TODO: Use interface instead if possible
 func generateHexID() string {
 	return primitive.NewObjectID().Hex()
 }
