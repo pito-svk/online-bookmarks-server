@@ -188,7 +188,10 @@ func TestRegister(t *testing.T) {
 
 		var jsonResponse map[string]interface{}
 
-		json.Unmarshal(w.Body.Bytes(), &jsonResponse)
+		err = json.Unmarshal(w.Body.Bytes(), &jsonResponse)
+		if err != nil {
+			panic(err)
+		}
 
 		assert.Equal(t, http.StatusBadRequest, w.Code)
 		assert.Equal(t, "Missing email", jsonResponse["error"])
@@ -219,7 +222,10 @@ func TestRegister(t *testing.T) {
 
 		var jsonResponse map[string]interface{}
 
-		json.Unmarshal(w.Body.Bytes(), &jsonResponse)
+		err = json.Unmarshal(w.Body.Bytes(), &jsonResponse)
+		if err != nil {
+			panic(err)
+		}
 
 		assert.Equal(t, http.StatusBadRequest, w.Code)
 		assert.Equal(t, "Missing password", jsonResponse["error"])
@@ -250,7 +256,10 @@ func TestRegister(t *testing.T) {
 
 		var jsonResponse map[string]interface{}
 
-		json.Unmarshal(w.Body.Bytes(), &jsonResponse)
+		err = json.Unmarshal(w.Body.Bytes(), &jsonResponse)
+		if err != nil {
+			panic(err)
+		}
 
 		assert.Equal(t, http.StatusBadRequest, w.Code)
 		assert.Equal(t, "Missing firstName", jsonResponse["error"])
@@ -281,7 +290,10 @@ func TestRegister(t *testing.T) {
 
 		var jsonResponse map[string]interface{}
 
-		json.Unmarshal(w.Body.Bytes(), &jsonResponse)
+		err = json.Unmarshal(w.Body.Bytes(), &jsonResponse)
+		if err != nil {
+			panic(err)
+		}
 
 		assert.Equal(t, http.StatusBadRequest, w.Code)
 		assert.Equal(t, "Missing lastName", jsonResponse["error"])
@@ -313,7 +325,10 @@ func TestRegister(t *testing.T) {
 
 		var jsonResponse map[string]interface{}
 
-		json.Unmarshal(w.Body.Bytes(), &jsonResponse)
+		err = json.Unmarshal(w.Body.Bytes(), &jsonResponse)
+		if err != nil {
+			panic(err)
+		}
 
 		assert.Equal(t, http.StatusBadRequest, w.Code)
 		assert.Equal(t, "Invalid email", jsonResponse["error"])
@@ -335,7 +350,10 @@ func TestRegister(t *testing.T) {
 
 		var jsonResponse map[string]interface{}
 
-		json.Unmarshal(w.Body.Bytes(), &jsonResponse)
+		err := json.Unmarshal(w.Body.Bytes(), &jsonResponse)
+		if err != nil {
+			panic(err)
+		}
 
 		assert.Equal(t, http.StatusBadRequest, w.Code)
 		assert.Equal(t, "Error parsing JSON body", jsonResponse["error"])
