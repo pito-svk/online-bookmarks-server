@@ -187,5 +187,5 @@ func (authH *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (authH *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(loginResponse{Token: "TODO"})
+	json.NewEncoder(w).Encode(loginResponse{Token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmNWUwMjZkOTAwYzcyNTQyZDRhZjRkOCJ9.A_8spV69KJ4tW1Pr0vaaE-cuP_CHFWW--OfiEJP229I"})
 }

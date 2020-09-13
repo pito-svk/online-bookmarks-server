@@ -364,6 +364,12 @@ func TestLogin(t *testing.T) {
 
 		handler.RegisterUser(_w, _r)
 
+		var registerUserJSONResponse map[string]interface{}
+
+		json.Unmarshal(_w.Body.Bytes(), &registerUserJSONResponse)
+
+		userID := registerUserJSONResponse["id"].(string)
+
 		w := httptest.NewRecorder()
 
 		authData := loginDataInput{
@@ -384,7 +390,22 @@ func TestLogin(t *testing.T) {
 
 		json.Unmarshal(w.Body.Bytes(), &jsonResponse)
 
+		authToken := jsonResponse["token"].(string)
+
 		assert.Equal(t, http.StatusOK, w.Code)
-		assert.NotEmpty(t, jsonResponse["token"])
+		assert.NotEmpty(t, authToken)
+
+		token, err := jwt.Parse(authToken, func(token *jwt.Token) (interface{}, error) {
+			return []byte(jwtSecret), nil
+		})
+
+		assert.NoError(t, err)
+
+		claims, ok := token.Claims.(jwt.MapClaims)
+
+		assert.True(t, ok)
+		assert.NoError(t, claims.Valid())
+
+		assert.Equal(t, userID, claims["id"])
 	})
 }
