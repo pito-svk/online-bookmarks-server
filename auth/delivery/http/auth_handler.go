@@ -73,6 +73,17 @@ func parseUserDataFromRequestBody(r *http.Request) (*userDataInput, error) {
 	return &userData, nil
 }
 
+func parseLoginDataFromUserBody(r *http.Request) (*loginDataInput, error) {
+	loginData := loginDataInput{}
+
+	err := json.NewDecoder(r.Body).Decode(&loginData)
+	if err != nil {
+		return nil, err
+	}
+
+	return &loginData, nil
+}
+
 func lowercaseFirstLetter(s string) string {
 	var str strings.Builder
 
@@ -89,6 +100,28 @@ func validateCreateUserInput(userData *userDataInput) error {
 	v := validator.New()
 
 	err := v.Struct(userData)
+
+	if err != nil {
+		validationErrors := err.(validator.ValidationErrors)
+
+		for _, err := range validationErrors {
+			if err.Tag() == "required" {
+				return fmt.Errorf("Missing %s", lowercaseFirstLetter(err.Field()))
+			}
+
+			if err.Tag() == "email" {
+				return errors.New("Invalid email")
+			}
+		}
+	}
+
+	return err
+}
+
+func validateLoginUserInput(loginData *loginDataInput) error {
+	v := validator.New()
+
+	err := v.Struct(loginData)
 
 	if err != nil {
 		validationErrors := err.(validator.ValidationErrors)
@@ -196,5 +229,33 @@ func (authH *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (authH *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(loginResponse{Token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmNWUwMjZkOTAwYzcyNTQyZDRhZjRkOCJ9.A_8spV69KJ4tW1Pr0vaaE-cuP_CHFWW--OfiEJP229I"})
+	setJSONContentTypeInResponse(w)
+
+	loginData, err := parseLoginDataFromUserBody(r)
+	if err != nil {
+		logErrorParsingJSONError(authH.Logger, err)
+		entity.DeliverErrorParsingJSONBodyHTTPError(w)
+		return
+	}
+	err = validateLoginUserInput(loginData)
+	if err != nil {
+		entity.DeliverBadRequestHTTPError(w, err)
+		return
+	}
+
+	user, err := authH.AuthUsecase.GetUserByEmail(loginData.Email)
+	if err != nil {
+		// TODO:
+		logInternalServerError(authH.Logger, err, "get_user_by_email")
+		entity.DeliverInternalServerErrorHTTPError(w)
+	}
+
+	authToken, err := authH.AuthUsecase.GenerateAuthToken(user.ID, authH.JwtSecret)
+	if err != nil {
+		// TODO:
+		logInternalServerError(authH.Logger, err, "get_auth_token")
+		entity.DeliverInternalServerErrorHTTPError(w)
+	}
+
+	json.NewEncoder(w).Encode(loginResponse{Token: authToken})
 }

@@ -27,10 +27,19 @@ func (a *authUsecase) RegisterUser(user *entity.User) (*entity.User, error) {
 	return a.userRepo.Store(user)
 }
 
+func (a *authUsecase) GetUserByEmail(email string) (*entity.User, error) {
+	user, err := a.userRepo.GetByEmail(email)
+	if err != nil {
+		panic(err)
+	}
+
+	return &user, nil
+}
+
 func (a *authUsecase) GenerateAuthToken(userID string, jwtSecret string) (string, error) {
 	claimData := map[string]interface{}{
-		"id":    userID,
-		"exp":   time.Now().Add(time.Hour * 24 * 7).Unix(),
+		"id":  userID,
+		"exp": time.Now().Add(time.Hour * 24 * 7).Unix(),
 	}
 
 	authToken, err := entity.GenerateAuthToken(claimData, jwtSecret)

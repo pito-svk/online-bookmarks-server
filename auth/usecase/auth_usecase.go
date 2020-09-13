@@ -35,6 +35,15 @@ func (authU *authUsecase) RegisterUser(u *entity.User) (*entity.User, error) {
 	return user, nil
 }
 
+func (authU *authUsecase) GetUserByEmail(email string) (*entity.User, error) {
+	user, err := authU.userRepo.GetByEmail(email)
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
 func (a *authUsecase) GenerateAuthToken(userID string, jwtSecret string) (string, error) {
 	claimData := map[string]interface{}{
 		"id":  userID,
