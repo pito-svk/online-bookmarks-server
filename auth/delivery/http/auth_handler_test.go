@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/stretchr/testify/assert"
@@ -139,6 +140,7 @@ func TestRegister(t *testing.T) {
 		assert.NoError(t, claims.Valid())
 
 		assert.Equal(t, jsonResponse["id"], claims["id"])
+		assert.Equal(t, time.Now().Add(time.Hour*24*7).Unix(), int64(claims["exp"].(float64)))
 	})
 
 	t.Run("duplicate", func(t *testing.T) {

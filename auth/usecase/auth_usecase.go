@@ -1,6 +1,8 @@
 package usecase
 
 import (
+	"time"
+
 	"peterparada.com/online-bookmarks/domain"
 	"peterparada.com/online-bookmarks/domain/entity"
 )
@@ -35,7 +37,8 @@ func (authU *authUsecase) RegisterUser(u *entity.User) (*entity.User, error) {
 
 func (a *authUsecase) GenerateAuthToken(userID string, jwtSecret string) (string, error) {
 	claimData := map[string]interface{}{
-		"id": userID,
+		"id":  userID,
+		"exp": time.Now().Add(time.Hour * 24 * 7).Unix(),
 	}
 
 	authToken, err := entity.GenerateAuthToken(claimData, jwtSecret)
