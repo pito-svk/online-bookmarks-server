@@ -436,5 +436,6 @@ func TestLogin(t *testing.T) {
 		assert.NoError(t, claims.Valid())
 
 		assert.Equal(t, userID, claims["id"])
+		assert.Equal(t, time.Now().Add(time.Hour*24*7).Unix(), int64(claims["exp"].(float64)))
 	})
 }
