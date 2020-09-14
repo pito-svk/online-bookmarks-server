@@ -140,7 +140,11 @@ func TestRegister(t *testing.T) {
 		assert.NoError(t, claims.Valid())
 
 		assert.Equal(t, jsonResponse["id"], claims["id"])
-		assert.Equal(t, time.Now().Add(time.Hour*24*7).Unix(), int64(claims["exp"].(float64)))
+
+		sevenDaysFromNow := time.Now().Add(time.Hour * 24 * 7).Unix()
+		jwtExpiration := int64(claims["exp"].(float64))
+
+		assert.Equal(t, sevenDaysFromNow, jwtExpiration)
 	})
 
 	t.Run("duplicate", func(t *testing.T) {
@@ -436,6 +440,10 @@ func TestLogin(t *testing.T) {
 		assert.NoError(t, claims.Valid())
 
 		assert.Equal(t, userID, claims["id"])
-		assert.Equal(t, time.Now().Add(time.Hour*24*7).Unix(), int64(claims["exp"].(float64)))
+
+		sevenDaysFromNow := time.Now().Add(time.Hour * 24 * 7).Unix()
+		jwtExpiration := int64(claims["exp"].(float64))
+
+		assert.Equal(t, sevenDaysFromNow, jwtExpiration)
 	})
 }
