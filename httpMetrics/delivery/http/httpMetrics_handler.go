@@ -15,10 +15,9 @@ type HTTPMetricsHandler struct {
 	HTTPMetrics        *entity.HTTPMetrics
 }
 
-func NewHTTPMetricsHandler(router *chi.Mux, usecase domain.HTTPMetricsUsecase, logger domain.Logger) {
+func NewHTTPMetricsHandler(router *chi.Mux, logger domain.Logger) {
 	handler := &HTTPMetricsHandler{
-		HTTPMetricsUsecase: usecase,
-		Logger:             logger,
+		Logger: logger,
 	}
 
 	router.Use(handler.LogHTTPMetrics)
@@ -35,12 +34,34 @@ func logHTTPMetrics(logger domain.Logger, httpMetrics map[string]interface{}) {
 	logger.Trace(httpMetrics, "HTTP request")
 }
 
-func (httpMetricsH *HTTPMetricsHandler) getHTTPMetrics(w *entity.ResponseWriterWithMetrics, r *http.Request) (*entity.HTTPMetrics, error) {
-	requestMetrics, err := httpMetricsH.HTTPMetricsUsecase.GetHTTPRequestMetrics(r)
+func (httpMetricsH *HTTPMetricsHandler) getHTTPRequestMetrics(r *http.Request) (*entity.HTTPRequestMetrics, error) {
+	ip, err := entity.GetIPAddressFromHTTPRequest(r)
 	if err != nil {
 		return nil, err
 	}
-	responseMetrics := httpMetricsH.HTTPMetricsUsecase.GetHTTPResponseMetrics(w)
+
+	return &entity.HTTPRequestMetrics{
+		URI:       r.URL.String(),
+		Method:    r.Method,
+		Referer:   r.Header.Get("Referer"),
+		UserAgent: r.Header.Get("User-Agent"),
+		IP:        ip,
+	}, nil
+}
+
+func (httpMetricsU *HTTPMetricsHandler) getHTTPResponseMetrics(w *entity.ResponseWriterWithMetrics) *entity.HTTPResponseMetrics {
+	return &entity.HTTPResponseMetrics{
+		Code:     w.StatusCode,
+		Duration: w.Duration,
+	}
+}
+
+func (httpMetricsH *HTTPMetricsHandler) getHTTPMetrics(w *entity.ResponseWriterWithMetrics, r *http.Request) (*entity.HTTPMetrics, error) {
+	requestMetrics, err := httpMetricsH.getHTTPRequestMetrics(r)
+	if err != nil {
+		return nil, err
+	}
+	responseMetrics := httpMetricsH.getHTTPResponseMetrics(w)
 
 	httpMetrics := entity.HTTPMetrics{RequestMetrics: requestMetrics, ResponseMetrics: responseMetrics}
 

@@ -14,7 +14,6 @@ import (
 	"peterparada.com/online-bookmarks/domain"
 	_endpointNotFoundHttpDelivery "peterparada.com/online-bookmarks/endpointNotFound/delivery/http"
 	_httpMetricsHttpDelivery "peterparada.com/online-bookmarks/httpMetrics/delivery/http"
-	_httpMetricsUsecase "peterparada.com/online-bookmarks/httpMetrics/usecase"
 	"peterparada.com/online-bookmarks/logging/repository"
 	_pingHttpDelivery "peterparada.com/online-bookmarks/ping/delivery/http"
 	_pingUsecase "peterparada.com/online-bookmarks/ping/usecase"
@@ -65,11 +64,10 @@ func main() {
 
 	userRepo := _userRepo.NewFileDBUserRepository(fileDB)
 
-	httpMetricsUsecase := _httpMetricsUsecase.NewHTTPMetricsUsecase()
 	pingUsecase := _pingUsecase.NewPingUsecase()
 	authUsecase := _authUsecase.NewAuthUsecase(userRepo)
 
-	_httpMetricsHttpDelivery.NewHTTPMetricsHandler(r, httpMetricsUsecase, logger)
+	_httpMetricsHttpDelivery.NewHTTPMetricsHandler(r, logger)
 	_endpointNotFoundHttpDelivery.NewEndpointNotFoundHandler(r)
 
 	_pingHttpDelivery.NewPingHandler(r, pingUsecase)
