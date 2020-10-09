@@ -1,6 +1,8 @@
 package usecase
 
 import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"golang.org/x/crypto/bcrypt"
 	"peterparada.com/online-bookmarks/domain"
 	"peterparada.com/online-bookmarks/domain/entity"
 )
@@ -15,7 +17,46 @@ func NewAuthUsecase(userRepo domain.UserRepository) domain.AuthUsecase {
 	}
 }
 
-func (authU *authUsecase) RegisterUser(u *entity.User) (*entity.User, error) {
+type userDataInput struct {
+	Email     string
+	Password  string
+	FirstName string
+	LastName  string
+}
+
+func generateHexID() string {
+	return primitive.NewObjectID().Hex()
+}
+
+func generateID() string {
+	return generateHexID()
+}
+
+func hashPassword(password string) (string, error) {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+
+	return string(hashedPassword), nil
+}
+
+func (user *User) SetID() {
+	user.ID = generateID()
+}
+
+func (user *User) SetHashedPassword() error {
+	hashedPassword, err := hashPassword(user.Password)
+	if err != nil {
+		return err
+	}
+
+	user.Password = hashedPassword
+
+	return nil
+}
+
+func (authU *authUsecase) RegisterUser(u userData) (*entity.User, error) {
 	u.SetID()
 
 	err := u.SetHashedPassword()
@@ -23,7 +64,9 @@ func (authU *authUsecase) RegisterUser(u *entity.User) (*entity.User, error) {
 		return nil, err
 	}
 
-	user, err := authU.userRepo.Store(u)
+	userDataInputForEntity := formatWithId(u)
+
+	user, err := authU.userRepo.Store(userDataInputForEntity)
 	if err != nil {
 		return nil, err
 	}

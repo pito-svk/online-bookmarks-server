@@ -2,6 +2,8 @@ package entity
 
 import "github.com/dgrijalva/jwt-go"
 
+// TODO: Shouldn't be part of entity
+
 func GenerateAuthToken(claimData map[string]interface{}, jwtSecret string) (string, error) {
 	jwtClaims := jwt.MapClaims(claimData)
 

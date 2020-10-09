@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// TODO: Shouldn't be part of entity
 type IPAddress struct {
 	Address string
 }

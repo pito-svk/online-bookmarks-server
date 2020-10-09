@@ -1,5 +1,7 @@
 package entity
 
+// TODO: Shouldn't be part of entity
+
 type HTTPRequestMetrics struct {
 	URI       string
 	Method    string
